@@ -1,14 +1,20 @@
 import os
+from dotenv import load_dotenv
 
 import caldav
+
 from caldav.elements import dav, cdav
 from datetime import datetime
+
+# Загрузка переменных из .env
+load_dotenv()
 
 # Данные для подключения к серверу
 url = os.getenv("CALDAV_URL")
 username = os.getenv("CALDAV_USERNAME")
 password = os.getenv("CALDAV_PASSWORD")
 print(url, username, password)
+
 # Подключение к серверу
 client = caldav.DAVClient(url, username=username, password=password)
 
