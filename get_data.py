@@ -1,11 +1,15 @@
+import locale
 import os
 from dotenv import load_dotenv
 
 import caldav
 
+from icalendar import Calendar
 from caldav.elements import dav, cdav
 from datetime import datetime, timedelta
 
+# Установка русской локали
+locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 # Загрузка переменных из .env
 load_dotenv()
 
@@ -28,27 +32,72 @@ with caldav.DAVClient(url=url, username=username, password=password) as client:
     # Поиск событий за заданную дату
     all_events = my_calendar.date_search(start=date_to_search, end=None)
 
-    print(f"all_events {all_events}")
-    for event in all_events:
-        event_details = event.vobject_instance
-        print(event_details.vevent)
+print(f"all_events {all_events}")
+for event in all_events:
+    raw_data = event.data
+    # print(raw_data)
+    try:
+        calendar = Calendar.from_ical(raw_data)
+        for component in calendar.walk('VEVENT'):
+            summary = component.get('SUMMARY')
+            location = component.get("LOCATION")
+            dtstart = component.get('DTSTART').dt
+            dtend = component.get("DTEND").dt
+            category = component.get("CATEGORY")
+            description = component.get("DESCRIPTION")
+            attendee = component.get("ATTENDEE")
+            print(f"\nСобытие: {summary} \n"
+                  f"Место проведения: {location} \n"
+                  f"Категория события: {category} \n"
+                  f"Начало: {dtstart.strftime('%d %B %Y, %H:%M')} \n"
+                  f"Конец: {dtend.strftime('%d %B %Y, %H:%M')} \n"
+                  f"Описание: {description} \n"
+                  f"Приглашенные: {attendee} \n"
+                  )
 
-        summary = event_details.vevent.summary.value if hasattr(event_details.vevent,
-                                                                'summary') else 'Нет темы'
-        start = event_details.vevent.dtstart.value
-        end = event_details.vevent.dtend.value if hasattr(event_details.vevent,
-                                                          'dtend') else 'Нет времени окончания'
+            # print(f"Событие: {summary}, Начало: {dtstart}")
+    except Exception as e:
+        print(f"Ошибка разбора icalendar: {e}")
 
+        # event_details = event.vobject_instance
+        # contents = event_details.vevent.__dict__["contents"]
+        # print()
+        # for k, v in contents.items():
+        #     print(f"{k}: {v}")
+
+        # Вывод информации
+        # summary = event_details.vevent.summary.value if hasattr(event_details.vevent,
+        #                                                         'summary') else 'Нет темы'
+        # start = event_details.vevent.dtstart.value
+        # end = event_details.vevent.dtend.value if hasattr(event_details.vevent,
+        #                                                   'dtend') else 'Нет времени окончания'
+        # description = event_details.vevent.description.value if hasattr(event_details.vevent,
+        #                                                                 'description') else 'Нет описания'
+        # location = event_details.vevent.location.value if hasattr(event_details.vevent,
+        #                                                           'location') else 'Нет местоположения'
+        # organizer = event_details.vevent.organizer if hasattr(event_details.vevent,
+        #                                                           'organizer') else 'Нет организатора'
+
+        # Выводим данные
         # print(f"Событие: {summary}")
-        # Разбираем данные события
-        # print(f"Событие: {event_details.get('SUMMARY')}")
-        # print(f"Начало: {event_details.get('DTSTART').dt}")
-        # print(f"Конец: {event_details.get('DTEND').dt}")
-        # print(f"Описание: {event_details.get('DESCRIPTION')}")
-        # print(f"Местоположение: {event_details.get('LOCATION')}")
-        # print(f"Приглашенные: {event_details.get('ATTENDEE')}")
+        # print(f"Начало: {start}")
+        # print(f"Конец: {end}")
+        # print(f"Описание: {description}")
+        # print(f"Местоположение: {location}")
+        # print(f"Организатор: {organizer}")
 
-
+        # Обработка приглашенных
+        # if hasattr(event_details.vevent, 'attendee'):
+        #     attendees = event_details.vevent.attendee
+        #     print(attendees)
+        #     if isinstance(attendees, list):
+        #         for attendee in attendees:
+        #             print(f"Приглашенный: {attendee.value}")
+        #     else:
+        #         print(f"Приглашенный: {attendees.value}")
+        #
+        # print()
+        # print()
 # # Подключение к серверу
 # client = caldav.DAVClient(url, username=username, password=password)
 #
