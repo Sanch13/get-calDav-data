@@ -1,7 +1,5 @@
 import locale
 
-import caldav
-
 from icalendar import Calendar
 from datetime import datetime, timedelta
 
@@ -16,7 +14,7 @@ from utils import (
     get_start_time,
     get_end_time,
     get_category,
-    get_description, get_carddav_contacts
+    get_description, get_address_book,
 )
 
 locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')  # Установка русской локали
@@ -31,7 +29,8 @@ end_date = date_to_search + timedelta(days=1)
 
 my_calendar = connect_to_calendar(**credentials)  # <class 'caldav.objects.Calendar'>
 
-all_events = my_calendar.date_search(start=date_to_search, end=None)
+all_events = my_calendar.date_search(start=date_to_search,
+                                     end=None)
 
 for event in all_events:
     raw_data = event.data
@@ -62,6 +61,21 @@ for event in all_events:
         print(f"Ошибка разбора icalendar: {e}")
 
 
-contacts = get_carddav_contacts(**get_caldav_config())
-for contact in contacts:
-    print(f"Имя: {contact['name']}, Email: {contact['email']}")
+
+
+
+
+# url_miran_by = "https://mail.miran.by/SOGo/dav/a.zubchyk@miran.by/Contacts/users/"
+# url_miran_by_2 = "https://mail.miran.by/SOGo/dav/a.zubchyk@miran.by/Contacts/users/a.zubchyk@miran.by"
+# url_miran_bel = "https://mail.miran.by/SOGo/dav/a.zubchyk@miran-bel.com/Contacts/users/"
+#
+# username = 'a.zubchyk@miran.by'
+# password = '0)ijig/4[>JLiD,b%&,eeCHIyHGU=G|7P7W'
+#
+# url_ad = "https://mail.miran.by/SOGo/dav/"
+#
+# get_address_book(url_miran_by_2,
+#                  username=username,
+#                  password=password)
+
+

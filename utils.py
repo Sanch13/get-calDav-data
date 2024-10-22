@@ -1,10 +1,10 @@
 import os
 from datetime import datetime, timedelta
 
+import requests
+from requests.auth import HTTPBasicAuth
 from dotenv import load_dotenv
-
 import caldav
-import vobject
 
 
 def get_caldav_config():
@@ -38,6 +38,7 @@ def get_text_format_datetime(date_obj: datetime) -> str:
 def get_organizer_sent_by(component):
     """Получить организатора мероприятия"""
     if 'ORGANIZER' in component:
+        print(component.get('ORGANIZER').params)
         organizer = component.get('ORGANIZER').params.get('SENT-BY')  # Извлекаем параметр SENT-BY
         return organizer
 
@@ -85,46 +86,14 @@ def get_description(component) -> str:
     return component.get("DESCRIPTION") if 'DESCRIPTION' in component else ''
 
 
-def get_carddav_contacts(url, username, password):
-    try:
-        # Подключение к CardDAV-серверу
-        client = caldav.DAVClient(url=url, username=username, password=password)
-        # Получение доступа к основному принципалу (учётной записи)
-        principal = client.principal()
+def get_address_book(url, username, password):
+    response = requests.get(
+        url=url,
+        auth=HTTPBasicAuth(username, password),
+    )
+    if response.status_code == 200:
+        vcard_data = response.text
+        print(vcard_data)
+    else:
+        print("Ошибка при получении vCard:", response.status_code)
 
-        # Получение всех коллекций адресных книг
-        addressbooks = principal.address_book_home_set()
-
-        # Проверяем наличие адресных книг
-        if not addressbooks:
-            print("Не удалось найти адресные книги.")
-            return []
-
-        # Берем первую доступную адресную книгу
-        addressbook = addressbooks[0]
-
-        # Получение всех контактов
-        contacts = addressbook.contacts()
-
-        # Список для хранения данных контактов
-        contact_list = []
-
-        for contact in contacts:
-            raw_data = contact.vcard
-            vcard = vobject.readOne(raw_data)
-
-            # Извлечение данных контакта (имя и email)
-            fn = vcard.fn.value  # Полное имя (CN)
-            email = vcard.email.value if hasattr(vcard, 'email') else None  # Email, если есть
-
-            # Добавляем контакт в список
-            contact_list.append({
-                'name': fn,
-                'email': email
-            })
-
-        return contact_list
-
-    except Exception as e:
-        print(f"Ошибка при подключении или обработке данных: {e}")
-        return []
