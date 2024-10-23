@@ -1,10 +1,14 @@
+import json
 import os
 from datetime import datetime, timedelta
 
 import requests
 from requests.auth import HTTPBasicAuth
+
 from dotenv import load_dotenv
+
 import caldav
+from icalendar import Calendar
 
 
 def get_caldav_config():
@@ -38,7 +42,6 @@ def get_text_format_datetime(date_obj: datetime) -> str:
 def get_organizer_sent_by(component):
     """Получить организатора мероприятия"""
     if 'ORGANIZER' in component:
-        print(component.get('ORGANIZER').params)
         organizer = component.get('ORGANIZER').params.get('SENT-BY')  # Извлекаем параметр SENT-BY
         return organizer
 
@@ -84,6 +87,50 @@ def get_category(component) -> str:
 def get_description(component) -> str:
     """Возвращает конец времени проведения"""
     return component.get("DESCRIPTION") if 'DESCRIPTION' in component else ''
+
+
+def get_all_events_json(all_events):
+    """Возвращает все события календаря в формате json"""
+    events_json = []
+    try:
+        for event in all_events:
+            raw_data = event.data
+            calendar = Calendar.from_ical(raw_data)
+            for component in calendar.walk('VEVENT'):
+                item = {
+                    "summary": get_summary(component),
+                    "location": get_location(component),
+                    "start": get_text_format_datetime(get_start_time(component)) if get_start_time(
+                        component) else "",
+                    "end": get_text_format_datetime(get_end_time(component)) if get_end_time(
+                        component) else "",
+                    "category": get_category(component),
+                    "description": get_description(component),  #
+                    "members": get_attendees_full_names(component),  # Участники
+                    "organizer": get_organizer_sent_by(component)  # Организатор
+                }
+
+                events_json.append(item)
+
+        return json.dumps(events_json)
+
+
+                # print(f"\nСобытие: {summary} \n"
+                #       f"Место проведения: {location} \n"
+                #       f"Категория события: {category} \n"
+                #       f"Начало: {start} \n"
+                #       f"Конец: {end} \n"
+                #       f"Описание: {description} \n"
+                #       f"Организатор: {organizer} \n"
+                #       f"Приглашенные: {members} \n"
+                #       )
+
+                # print(f"Событие: {summary}, Начало: {dtstart}")
+    except Exception as e:
+        print(f"Ошибка разбора icalendar: {e}")
+
+
+
 
 
 def get_address_book(url, username, password):
