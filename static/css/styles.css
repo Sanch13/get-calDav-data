@@ -1,0 +1,216 @@
+/* Настройка ширины полосы прокрутки */
+::-webkit-scrollbar {
+    width: 0px; /* Ширина вертикальной полосы прокрутки */
+    height: 5px; /* Высота горизонтальной полосы прокрутки */
+}
+
+/* Настройка фона полосы прокрутки */
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Цвет фона полосы прокрутки */
+}
+
+/* Настройка цвета ползунка полосы прокрутки */
+::-webkit-scrollbar-thumb {
+    background: #dcd8d8; /* Цвет ползунка */
+    border-radius: 4px; /* Скругление ползунка */
+}
+
+/* Настройка цвета ползунка при наведении */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Цвет ползунка при наведении */
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.2;
+    background-color: #f4f4f4;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+/* Основная обертка */
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 10px;
+    box-shadow: inset 0 0 0 10px black;
+}
+
+/****************************
+HEADER 
+****************************/
+.header {
+    display: flex;
+    background-color: #5b5f5e;
+    width: 100%;
+    height: 130px;
+    text-align: center;
+}
+
+.header__block__menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 70%;
+    background: linear-gradient(to right, 
+        rgba(0, 0, 0, 1) 0%,       /* Начало черного цвета слева */
+        rgb(5, 18, 41) 50%,        /* Переход к цвету в центре */
+        rgba(0, 0, 0, 1) 100%      /* Завершение черного цвета справа */
+    );
+}
+
+.header__logo__miran {
+    width: 50%;
+    height: 100px;
+    width: 200px;
+
+}
+
+.header__date {
+    width: 50%;
+}
+
+#currentDay,
+#currentDate {
+    color: white;
+    font-size: 40px;
+    display: flex;
+    justify-content: end;
+    margin-right: 5px;
+}
+
+.header__block__time {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30%;    
+    background-color: rgb(0, 0, 0);
+}
+
+.header__logo__time {
+    flex-grow: 5; 
+    width: 70px;  
+    height: 75px; 
+    display: flex; /* Используйте flex для центровки содержимого */
+    justify-content: center; /* Центрируем по горизонтали */
+    align-items: center; /* Центрируем по вертикали */
+}
+
+.header__current__time{
+    /* border: 1px solid red; */
+    flex-grow: 5;
+    color: white;
+    font-size: 92px;
+
+}
+
+/****************************
+END HEADER
+****************************/
+
+/**************************** 
+MAIN
+****************************/
+.main {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    background-color: rgb(174, 238, 168);
+}
+
+/* Левая часть основной части*/
+.main-left {
+    width: 70%;
+    background-color: rgba(143, 231, 231, 0.959);
+}
+/* Правая часть основной части*/
+.main-right {
+    width: 30%;
+    background-color: rgba(32, 36, 24, 0.932);
+}
+
+/*************************** 
+CARDS
+***************************/
+.container-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    color: #f4f4f4;
+    gap: 5px;
+}
+.card {
+    display: flex;
+    flex-direction: row;
+    /* border: 1px solid red; */
+    width: 100%;
+    height: 10vh;
+    background-color: #0A1229FF;
+}
+
+.card_current_time {
+    width: 100%;
+    border: 1px solid red;
+}
+
+.card_main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 90%;
+    /* border: 1px solid rgb(189, 235, 83); */
+
+}
+
+.card__time {
+    display: flex;
+    justify-content: end;
+    font-size: 35px;
+    padding: 3px 10px;
+}
+
+.card__description {
+    padding: 2px 5px;
+    font-size: clamp(14px, 2vw, 20px);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.card__color {
+    width: 10%;
+    background-color: green;
+    transition: background-color 0.3s;
+}
+/*************************** 
+END CARDS
+***************************/
+
+/**************************** 
+END MAIN
+****************************/
+
+/**************************** 
+FOOTER
+****************************/
+.footer {
+    height: 100px;
+    width: 100%;
+    background-color: #333333;
+    color: white;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+}
+
+
+

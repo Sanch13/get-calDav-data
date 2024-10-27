@@ -1,22 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles.css">
-    <title>Document</title>
-</head>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="static/css/styles.css" />
+        <script src="static/js/function.js"></script>
+		<title>Document</title>
+	</head>
 
-<body>
-<div class="wrapper">
-    <header class="header">
-    </header>
+	<body>
+		<div class="wrapper">
+			<header class="header">
+				<div class="header__block__menu">
+					<div class="header__logo__miran">
+                        <img src="static/img/logo.png"
+                        width="144"
+                        height="100"
+                        alt="">
+                    </div>
+					<div class="header__date">
+						<div class="header__current__workday">
+							<span id="currentDay"></span>
+						</div>
+						<div class="header__currnet__date">
+							<span id="currentDate"></span>
+						</div>
+					</div>
+				</div>
+				<div class="header__block__time">
+					<div class="header__logo__time">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="70"
+							height="70"
+							fill="currentColor"
+							class="bi bi-clock"
+							viewBox="0 -1 16 18"
+							color="white"
+							stroke="white"
+							stroke-width="0.5"
+						>
+							<path
+								d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"
+							/>
+							<path
+								d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"
+							/>
+						</svg>
+					</div>
+					<div class="header__current__time">
+						<span id="moscowTime"></span>
+					</div>
+				</div>
+			</header>
 
-    <main class="main">
-    </main>
+			<div class="main">
+				<main class="main-left"></main>
+				<aside class="main-right">
+					<div class="container-card">
+                        <div class="card">
+							<div class="card_current_time">
+								<div></div>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card_main">
+								<div class="card__time"></div>
+								<div class="card__description"></div>
+							</div>
+							<div class="card__color"></div>
+						</div>
+                        <div class="card">
+							<div class="card_main">
+								<div class="card__time"></div>
+								<div class="card__description"></div>
+							</div>
+							<div class="card__color"></div>
+						</div>
+                        <div class="card">
+							<div class="card_main">
+								<div class="card__time"></div>
+								<div class="card__description"></div>
+							</div>
+							<div class="card__color"></div>
+						</div>
+                        <div class="card">
+							<div class="card_main">
+								<div class="card__time"></div>
+								<div class="card__description"></div>
+							</div>
+							<div class="card__color"></div>
+						</div>
+                        <div class="card">
+							<div class="card_main">
+								<div class="card__time"></div>
+								<div class="card__description"></div>
+							</div>
+							<div class="card__color"></div>
+						</div>
+                        <div class="card">
+							<div class="card_main">
+								<div class="card__time"></div>
+								<div class="card__description"></div>
+							</div>
+							<div class="card__color"></div>
+						</div>
+                        <div class="card">
+							<div class="card_main">
+								<div class="card__time"></div>
+								<div class="card__description"></div>
+							</div>
+							<div class="card__color"></div>
+						</div>
+					</div>
+				</aside>
+			</div>
 
-    <footer class="footer"></footer>
-</div>
-</body>
+			<footer class="footer"></footer>
+		</div>
 
+		<script>
+            setInterval(updateMoscowTime, 1000);
+			// Инициализация отображения времени при загрузке страницы
+			updateMoscowTime();
+			
+            // Обновление даты и дня недели при загрузке страницы
+			updateDateTime();
+			// Устанавливаем таймер для обновления в полночь
+			setInterval(() => {
+				const now = new Date();
+				if (now.getHours() === 0 && now.getMinutes() === 0) {
+					updateDateTime();
+				}
+			}, 60 * 60 * 1000); // Проверка каждый час
+		</script>
+	</body>
 </html>
