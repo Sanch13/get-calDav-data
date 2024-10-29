@@ -151,15 +151,26 @@ CARDS
 .card {
     display: flex;
     flex-direction: row;
-    /* border: 1px solid red; */
     width: 100%;
     height: 10vh;
     background-color: #0A1229FF;
 }
 
 .card_current_time {
+    padding-right: 3rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
     width: 100%;
-    border: 1px solid red;
+    font-size: 2.5rem;
+}
+
+.green_status {
+    background: linear-gradient(to right, rgba(0, 255, 0, 0) 0%, rgba(0, 255, 0, 0.9) 100%);
+}
+
+.red_status {
+    background: linear-gradient(to right, rgba(0, 255, 0, 0) 0%, rgba(255, 0, 0, 0.9) 100%);
 }
 
 .card_main {
