@@ -123,14 +123,37 @@ MAIN
     display: flex;
     flex: 1;
     width: 100%;
-    background-color: rgb(174, 238, 168);
+    /* background-color: rgb(174, 238, 168); */
 }
 
 /* Левая часть основной части*/
 .main-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
     width: 70%;
     background-color: rgba(143, 231, 231, 0.959);
+    padding-bottom: 2rem;
+    gap: 40px;
 }
+
+.main__title, .main__time, .main__status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 5rem;
+}
+
+.main__title {
+    padding-top: 2rem;
+    
+}
+
+.main__status {
+    padding: 1rem;
+}
+
+
 /* Правая часть основной части*/
 .main-right {
     width: 30%;
