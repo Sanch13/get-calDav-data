@@ -9,3 +9,6 @@ class FirstRoom(models.Model):
                                   max_length=64,
                                   unique=True)
     data_json = models.JSONField(verbose_name="Данные")
+
+    def __str__(self):
+        return f"ID:{self.pk}  - Date:{self.created_at}  hash:{self.hash_value}"

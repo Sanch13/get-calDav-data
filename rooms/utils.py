@@ -151,23 +151,24 @@ def get_all_events_in_json(events):
             "status": "free"
         })
 
-    return json.dumps(all_events_cur_day, ensure_ascii=False, indent=4, sort_keys=True)
+    return json.dumps(all_events_cur_day, sort_keys=True)
 
 
 def generate_hash(data: str) -> str:
     """
-    Генерирует SHA-256 хэш для строки JSON.
+    Генерирует SHA-256 хэш для строки.
 
     :param data: Строка, представляющая собой JSON-объект.
     :return: Хэш в шестнадцатеричном формате.
-
-    :raises ValueError: Если входные данные не являются валидным JSON.
     """
+    data_str = json.loads(data)
+    print("Items ", len(data_str))
+    if len(data_str) == 1:
+        data = data_str[0]["end"]
+        print("[1 ITEM] ALL TIME IS fREE", data)
+    else:
+        data = data_str[0]["start"] = "start" if data_str[0]["status"] == 'free' else data_str
+        print("SEVERAL ITEMS", data)
 
-    try:
-        json_object = json.loads(data)
-    except ValueError as e:
-        raise ValueError("Invalid JSON format") from e
-
-    json_bytes = data.encode('utf-8')
-    return hashlib.sha256(json_bytes).hexdigest()
+    str_bytes = str(data).encode('utf-8')
+    return hashlib.sha256(str_bytes).hexdigest()
