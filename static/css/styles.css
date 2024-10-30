@@ -70,8 +70,6 @@ HEADER
 .header__logo__miran {
     width: 50%;
     height: 100px;
-    width: 200px;
-
 }
 
 .header__date {
@@ -123,36 +121,70 @@ MAIN
     display: flex;
     flex: 1;
     width: 100%;
-    /* background-color: rgb(174, 238, 168); */
 }
 
 /* Левая часть основной части*/
 .main-left {
     display: flex;
     flex-direction: column;
-    justify-content: start;
+    justify-content: space-between;
     width: 70%;
-    background-color: rgba(143, 231, 231, 0.959);
-    padding-bottom: 2rem;
-    gap: 40px;
+    /*background-color: rgba(77, 108, 108, 0.96);*/
+    padding: 0 3rem;
+    color: white;
 }
 
-.main__title, .main__time, .main__status {
+.main-left-bg-free {
+    background: linear-gradient(to right,
+        rgba(58, 192, 50, 0.9) 0%,
+        rgba(58, 192, 50, 0.9) 50%,
+        rgba(58, 192, 50, 0.9) 100%
+    );
+}
+
+.main-left-bg-reserved {
+    background: linear-gradient(to right,
+        rgba(182, 2, 2, 0.9) 0%,
+        rgba(182, 2, 2, 0.9) 50%,
+        rgba(182, 2, 2, 0.9) 100%
+    );
+}
+
+.main__title, .main__time, .main__status, .main__timer {
     display: flex;
     justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    height: 200px;
+}
+
+.main__title, .main__time {
+    font-size: 5rem;
+}
+
+.main__time {
+
+}
+
+.main__status {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
     align-items: center;
     font-size: 5rem;
 }
 
-.main__title {
-    padding-top: 2rem;
-    
+.main__timer {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: end;
+    font-size: 3rem;
 }
 
-.main__status {
-    padding: 1rem;
+#timer__off {
+    font-size: 7rem;
 }
-
 
 /* Правая часть основной части*/
 .main-right {
@@ -185,11 +217,11 @@ CARDS
     justify-content: flex-end;
     align-items: center;
     width: 100%;
-    font-size: 2.5rem;
+    font-size: 3rem;
 }
 
 .green_status {
-    background: linear-gradient(to right, rgba(0, 255, 0, 0) 0%, rgba(0, 255, 0, 0.9) 100%);
+    background: linear-gradient(to right, rgba(0, 255, 0, 0) 0%, rgba(0, 255, 0, 0.8) 90%);
 }
 
 .red_status {
@@ -237,13 +269,13 @@ END MAIN
 FOOTER
 ****************************/
 .footer {
+    display: flex;
     height: 100px;
     width: 100%;
     background-color: #333333;
     color: white;
     text-align: center;
-    position: fixed;
-    bottom: 0;
+    margin-top: auto;
 }
 
 

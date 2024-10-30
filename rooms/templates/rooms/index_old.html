@@ -55,32 +55,32 @@
     </header>
 
     <div class="main">
-        <main class="main-left">
+        <main class="main-left" id="main-left">
             <div class="main__title">
-                <h1>Переговорная 1 этаж</h1>
+                Переговорная 1 этаж
             </div>
-            <div class="main__time" id="main__time">
-
-            </div>
-            <div class="main__status" id="main__status">
+            <div class="main__time" id="main__time"></div>
+            <div class="main__status" id="main__status"></div>
+            <div class="main__timer"  id="main__timer">
+                <span id="timer__off"></span>
             </div>
         </main>
         <aside class="main-right">
-
             <div class="container-card" id="events-container">
-                <div class="card">
-                    <div class="card_current_time">
-                        <div></div>
-                    </div>
-                </div>
 
 <!--                <div class="card">-->
-<!--                    <div class="card_main">-->
-<!--                        <div class="card__time"></div>-->
-<!--                        <div class="card__description"></div>-->
+<!--                    <div class="card_current_time" id="card_current_time">-->
+<!--                        <p>СЕЙЧАС</p>-->
 <!--                    </div>-->
-<!--                    <div class="card__color"></div>-->
 <!--                </div>-->
+
+                <!--                <div class="card">-->
+                <!--                    <div class="card_main">-->
+                <!--                        <div class="card__time"></div>-->
+                <!--                        <div class="card__description"></div>-->
+                <!--                    </div>-->
+                <!--                    <div class="card__color"></div>-->
+                <!--                </div>-->
 
 
             </div>
@@ -92,12 +92,15 @@
 
 
 <script>
+    reloadPageOnMinuteSync();
     setInterval(updateMoscowTime, 1000);
+
     // Инициализация отображения времени при загрузке страницы
     updateMoscowTime();
 
     // Обновление даты и дня недели при загрузке страницы
     updateDateTime();
+
     // Устанавливаем таймер для обновления в полночь
     setInterval(() => {
         const now = new Date();
@@ -107,43 +110,29 @@
     }, 60 * 60 * 1000); // Проверка каждый час
 
 
-    // CARDS CARDS CARDS CARDS
+    // CARDS
     const jsonString = "{{ data|escapejs }}";
-    // Преобразуем JSON-строку в объект JavaScript
-    const events = JSON.parse(jsonString);
+    const events = JSON.parse(jsonString);  // Преобразуем JSON-строку в объект JavaScript
     console.log(events);
 
     const eventsContainer = document.getElementById("events-container");
 
     document.getElementById("main__status").textContent = `${events[0].summary}`;
     document.getElementById("main__time").textContent = `
-    ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -
-    ${new Date(events[0].end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    ${new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} -
+    ${new Date(events[0].end).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+    `;
 
     if (events.length === 1) {
-        console.log("1");
+        console.log("ONLY ONE ITEM");
+        eventsContainer.appendChild(createFirstCardDiv(events));
     } else {
-        events.forEach(event => {
-            // Создаем div для карточки
-            const cardDiv = document.createElement('div');
-            cardDiv.classList.add('card');
+        console.log("MANY ITEMS");
+        eventsContainer.appendChild(createFirstCardDiv(events));
 
-            // Создаем HTML внутри карточки
-            cardDiv.innerHTML = `
-                <div class="card_main">
-                    <div class="card__time">
-                        ${new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -
-                        ${new Date(event.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                    <div class="card__description">
-                        ${event.summary}
-                    </div>
-                </div>
-                <div class="card__color" style="background-color: ${event.status === 'free' ? 'green' : 'red'};"></div>
-            `;
-
-            // Добавляем карточку в контейнер
-            eventsContainer.appendChild(cardDiv);
+        events.slice(1).forEach(event => {
+            const card = createOtherCardDiv(event);
+            eventsContainer.appendChild(card);
         });
     }
 

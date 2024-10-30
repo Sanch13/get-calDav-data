@@ -85,7 +85,7 @@ def get_description(component) -> str:
     return component.get("DESCRIPTION") if 'DESCRIPTION' in component else ''
 
 
-def get_sorted_all_events(events) -> list:
+def get_sorted_events(events) -> list:
     """Возвращает все отсортированные события календаря по времени"""
     all_events = []
     try:
@@ -115,7 +115,7 @@ def get_sorted_all_events(events) -> list:
         return []
 
 
-def get_all_events_in_json(events):
+def get_sorted_all_events(events):
     """Возвращает все события текущего дня в json"""
 
     time_now = datetime.now(timezone(timedelta(hours=3)))
@@ -151,24 +151,35 @@ def get_all_events_in_json(events):
             "status": "free"
         })
 
-    return json.dumps(all_events_cur_day, sort_keys=True)
+    return all_events_cur_day
 
 
-def generate_hash(data: str) -> str:
+def get_all_events_today_in_json(events):
+    return json.dumps(events, sort_keys=True)
+
+
+def generate_hash(data: list) -> str:
     """
     Генерирует SHA-256 хэш для строки.
 
-    :param data: Строка, представляющая собой JSON-объект.
+    :param data: Строка-объект.
     :return: Хэш в шестнадцатеричном формате.
     """
-    data_str = json.loads(data)
-    print("Items ", len(data_str))
-    if len(data_str) == 1:
-        data = data_str[0]["end"]
+    if len(data) == 1 and data[0]["status"] == 'free':
+        data[0]["start"] = "start"
         print("[1 ITEM] ALL TIME IS fREE", data)
     else:
-        data = data_str[0]["start"] = "start" if data_str[0]["status"] == 'free' else data_str
-        print("SEVERAL ITEMS", data)
+        if data[0]["status"] == 'free':
+            data[0]["start"] = "start"
+        print("ADD WITH FREE ITEM", data)
 
     str_bytes = str(data).encode('utf-8')
     return hashlib.sha256(str_bytes).hexdigest()
+
+
+def is_all_time_free_today(events: list) -> bool:
+    """
+    :param events: Список событий календаря
+    :return: Булевое значение
+    """
+    return len(events) == 1 and events[0]["status"] == 'free'

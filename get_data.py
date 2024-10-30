@@ -5,8 +5,8 @@ from datetime import datetime
 from rooms.utils import (
     get_caldav_config,
     connect_to_calendar,
+    get_sorted_events,
     get_sorted_all_events,
-    get_all_events_in_json,
     generate_hash
 )
 

@@ -34,7 +34,7 @@ function updateDateTime() {
         month: "long",
         year: "numeric",
     };
-    const optionsDay = { weekday: "long" };
+    const optionsDay = {weekday: "long"};
     const now = new Date();
 
     // Форматирование даты и дня недели
@@ -47,4 +47,53 @@ function updateDateTime() {
     document.getElementById("currentDate").textContent =
         currentDate;
     document.getElementById("currentDay").textContent = currentDay;
+}
+
+function createFirstCardDiv(events) {
+    const firstCardDiv = document.createElement('div');
+    firstCardDiv.innerHTML = `
+            <div class="card">
+                <div class="card_current_time ${events[0].status === 'free' ? 'green_status' : 'red_status'}" id="card_current_time">
+                    <p>СЕЙЧАС</p>
+                </div>
+            </div>
+        `
+    return firstCardDiv
+}
+
+function createOtherCardDiv(event) {
+    const cardDiv = document.createElement('div');
+    cardDiv.classList.add('card');
+
+    // Создаем HTML внутри карточки
+            cardDiv.innerHTML = `
+                <div class="card_main">
+                    <div class="card__time">
+                        ${new Date(event.start).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            })} -
+                        ${new Date(event.end).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            })}
+                    </div>
+                    <div class="card__description">
+                        ${event.summary}
+                    </div>
+                </div>
+                <div class="card__color" style="background-color: ${event.status === 'free' ? 'green' : 'red'};"></div>
+            `;
+
+    return cardDiv
+}
+
+function reloadPageOnMinuteSync() {
+    const now = new Date();
+    const secondsToNextMinute = 60 - now.getSeconds();
+
+    // Таймер до следующей минуты
+    setTimeout(() => {
+        location.reload();  // Перезагрузка страницы
+    }, secondsToNextMinute * 1000);
 }
