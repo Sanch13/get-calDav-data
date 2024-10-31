@@ -117,20 +117,24 @@
 
     const eventsContainer = document.getElementById("events-container");
 
-    document.getElementById("main__status").textContent = `${events[0].summary}`;
+    const mainEvents = equalsTime(events);
+    console.log(mainEvents.length, mainEvents);
+
+    document.getElementById("main-left").classList.add(`${mainEvents[0].status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
+    document.getElementById("main__status").textContent = `${mainEvents[0].summary}`;
     document.getElementById("main__time").textContent = `
-    ${new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} -
-    ${new Date(events[0].end).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+        ${new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} -
+        ${new Date(mainEvents[0].end).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
     `;
 
-    if (events.length === 1) {
+    if (mainEvents.length === 1) {
         console.log("ONLY ONE ITEM");
-        eventsContainer.appendChild(createFirstCardDiv(events));
+        eventsContainer.appendChild(createFirstCardDiv(mainEvents));
     } else {
         console.log("MANY ITEMS");
-        eventsContainer.appendChild(createFirstCardDiv(events));
+        eventsContainer.appendChild(createFirstCardDiv(mainEvents));
 
-        events.slice(1).forEach(event => {
+        mainEvents.slice(1).forEach(event => {
             const card = createOtherCardDiv(event);
             eventsContainer.appendChild(card);
         });

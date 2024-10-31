@@ -126,6 +126,8 @@ def get_sorted_all_events(events):
     for event in events:
         start_time = event.get("start", midnight)
 
+        print(time_now, start_time)
+
         if time_now < start_time:
             all_events_cur_day.append({
                 "summary": "СВОБОДНО",

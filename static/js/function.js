@@ -97,3 +97,20 @@ function reloadPageOnMinuteSync() {
         location.reload();  // Перезагрузка страницы
     }, secondsToNextMinute * 1000);
 }
+
+
+function equalsTime(events) {
+    if (events.length === 1) {
+        return events
+    }
+    const nowTime = new Date().getTime();
+    const firstEventEndTime = new Date(events[0].end).getTime();
+    console.log("Now time", nowTime);
+    console.log("FIRST time END", firstEventEndTime);
+
+    if (nowTime >= firstEventEndTime && events[0].status === "reserved" ) {
+        return events.slice(1)
+    } else {
+        return events
+    }
+}
