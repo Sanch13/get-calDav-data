@@ -114,3 +114,18 @@ function equalsTime(events) {
         return events
     }
 }
+
+function showDiffTime(endTimeEvent) {
+    const now = new Date();
+    const endTime = new Date(endTimeEvent.end);
+    let diffMs = endTime - now;
+
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.ceil((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    // Форматируем часы и минуты, добавляя нули перед одиночными числами
+    const formattedHours = String(diffHours).padStart(2, '0');
+    const formattedMinutes = String(diffMinutes).padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}`;
+}

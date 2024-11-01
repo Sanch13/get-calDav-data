@@ -14,6 +14,7 @@
         <div class="header__block__menu">
             <div class="header__logo__miran">
                 <img src="{% static 'img/logo.png' %}"
+                     class="logo__miran"
                      width="144"
                      height="100"
                      alt="">
@@ -61,28 +62,13 @@
             </div>
             <div class="main__time" id="main__time"></div>
             <div class="main__status" id="main__status"></div>
-            <div class="main__timer"  id="main__timer">
-                <span id="timer__off"></span>
+            <div class="main__timer">
+                <div class="main__timer__text" id="main__timer__text"></div>
+                <div id="timer__off"></div>
             </div>
         </main>
         <aside class="main-right">
             <div class="container-card" id="events-container">
-
-<!--                <div class="card">-->
-<!--                    <div class="card_current_time" id="card_current_time">-->
-<!--                        <p>СЕЙЧАС</p>-->
-<!--                    </div>-->
-<!--                </div>-->
-
-                <!--                <div class="card">-->
-                <!--                    <div class="card_main">-->
-                <!--                        <div class="card__time"></div>-->
-                <!--                        <div class="card__description"></div>-->
-                <!--                    </div>-->
-                <!--                    <div class="card__color"></div>-->
-                <!--                </div>-->
-
-
             </div>
         </aside>
     </div>
@@ -92,54 +78,60 @@
 
 
 <script>
-    reloadPageOnMinuteSync();
-    setInterval(updateMoscowTime, 1000);
+    document.addEventListener("DOMContentLoaded", () => {
+        reloadPageOnMinuteSync();
+        setInterval(updateMoscowTime, 1000);
 
-    // Инициализация отображения времени при загрузке страницы
-    updateMoscowTime();
+        // Инициализация отображения времени при загрузке страницы
+        updateMoscowTime();
 
-    // Обновление даты и дня недели при загрузке страницы
-    updateDateTime();
+        // Обновление даты и дня недели при загрузке страницы
+        updateDateTime();
 
-    // Устанавливаем таймер для обновления в полночь
-    setInterval(() => {
-        const now = new Date();
-        if (now.getHours() === 0 && now.getMinutes() === 0) {
-            updateDateTime();
+        // Устанавливаем таймер для обновления в полночь
+        setInterval(() => {
+            const now = new Date();
+            if (now.getHours() === 0 && now.getMinutes() === 0) {
+                updateDateTime();
+            }
+        }, 60 * 60 * 1000); // Проверка каждый час
+
+
+        // CARDS
+        const jsonString = "{{ data|escapejs }}";
+        const events = JSON.parse(jsonString);  // Преобразуем JSON-строку в объект JavaScript
+        console.log(events);
+
+        const eventsContainer = document.getElementById("events-container");
+
+        const mainEvents = equalsTime(events);
+        const currentEvent = mainEvents[0]
+        console.log(mainEvents.length, mainEvents);
+
+        document.getElementById("main-left").classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
+        document.getElementById("main__status").textContent = `${currentEvent.summary}`;
+        document.getElementById("main__time").textContent = `
+            ${new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} -
+            ${new Date(currentEvent.end).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+        `;
+        document.getElementById("main__timer__text").textContent = `
+             ${currentEvent.status === "reserved" ? 'Освободится через :' : ''}
+        `;
+        document.getElementById("timer__off").textContent = currentEvent.status === "reserved" ? showDiffTime(currentEvent) : '';
+
+        if (mainEvents.length === 1) {
+            console.log("ONLY ONE ITEM");
+            eventsContainer.appendChild(createFirstCardDiv(mainEvents));
+        } else {
+            console.log("MANY ITEMS");
+            eventsContainer.appendChild(createFirstCardDiv(mainEvents));
+
+            mainEvents.slice(1).forEach(event => {
+                const card = createOtherCardDiv(event);
+                eventsContainer.appendChild(card);
+            });
         }
-    }, 60 * 60 * 1000); // Проверка каждый час
-
-
-    // CARDS
-    const jsonString = "{{ data|escapejs }}";
-    const events = JSON.parse(jsonString);  // Преобразуем JSON-строку в объект JavaScript
-    console.log(events);
-
-    const eventsContainer = document.getElementById("events-container");
-
-    const mainEvents = equalsTime(events);
-    console.log(mainEvents.length, mainEvents);
-
-    document.getElementById("main-left").classList.add(`${mainEvents[0].status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
-    document.getElementById("main__status").textContent = `${mainEvents[0].summary}`;
-    document.getElementById("main__time").textContent = `
-        ${new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} -
-        ${new Date(mainEvents[0].end).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
-    `;
-
-    if (mainEvents.length === 1) {
-        console.log("ONLY ONE ITEM");
-        eventsContainer.appendChild(createFirstCardDiv(mainEvents));
-    } else {
-        console.log("MANY ITEMS");
-        eventsContainer.appendChild(createFirstCardDiv(mainEvents));
-
-        mainEvents.slice(1).forEach(event => {
-            const card = createOtherCardDiv(event);
-            eventsContainer.appendChild(card);
-        });
-    }
-
+    });
 </script>
 
 {% endblock %}
