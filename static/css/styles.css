@@ -148,17 +148,17 @@ MAIN
 
 .main-left-bg-free {
     background: linear-gradient(to right,
-        rgba(34, 138, 30, 0.9) 0%,
-        rgba(34, 138, 30, 0.9) 50%,
-        rgba(34, 138, 30, 0.9) 100%
+        rgba(34, 138, 30, 0.5) 0%,
+        rgba(34, 138, 30, 0.5) 50%,
+        rgba(34, 138, 30, 0.5) 100%
     );
 }
 
 .main-left-bg-reserved {
     background: linear-gradient(to right,
-        rgba(154, 24, 24, 0.9) 0%,
-        rgba(154, 24, 24, 0.9) 50%,
-        rgba(154, 24, 24, 0.9) 100%
+        rgba(154, 24, 24, 0.5) 0%,
+        rgba(154, 24, 24, 0.5) 50%,
+        rgba(154, 24, 24, 0.5) 100%
     );
 }
 
