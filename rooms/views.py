@@ -37,4 +37,12 @@ class TheFirstConferenceView(views.APIView):
         #     "data": get_object_or_404(FirstRoom, hash_value=hash_value).data_json,
         # }
         return render(request=request,
-                      template_name="rooms/index_old.html")
+                      template_name="rooms/first.html")
+
+
+class TheThirdConferenceView(views.APIView):
+    def get(self, request):
+        print("USUAL REQUEST")
+
+        return render(request=request,
+                      template_name="rooms/third.html")
