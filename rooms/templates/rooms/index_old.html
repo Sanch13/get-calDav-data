@@ -111,8 +111,9 @@
         document.getElementById("main-left").classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
         document.getElementById("main__status").textContent = `${currentEvent.summary}`;
         document.getElementById("main__time").textContent = `
-            ${new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} -
-            ${new Date(currentEvent.end).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+            ${new Date().toLocaleTimeString('ru-ru', {hour: '2-digit', minute: '2-digit'})} -
+            ${new Date(currentEvent.end).toLocaleTimeString('ru-ru', {hour: '2-digit', minute:
+                '2-digit'})}
         `;
         document.getElementById("main__timer__text").textContent = `
              ${currentEvent.status === "reserved" ? 'Освободится через :' : ''}
@@ -131,6 +132,12 @@
                 eventsContainer.appendChild(card);
             });
         }
+
+        const curHash = localStorage.getItem("curHash") || "empty";
+        const url = `/api/v1/first/events/?param=${encodeURIComponent(curHash)}`;
+        const curDataApi = getCurrentData(url=url)
+        console.log(curDataApi);
+
     });
 </script>
 

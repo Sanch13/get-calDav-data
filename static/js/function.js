@@ -69,11 +69,11 @@ function createOtherCardDiv(event) {
             cardDiv.innerHTML = `
                 <div class="card_main">
                     <div class="card__time">
-                        ${new Date(event.start).toLocaleTimeString([], {
+                        ${new Date(event.start).toLocaleTimeString("ru-ru", {
                 hour: '2-digit',
                 minute: '2-digit'
             })} -
-                        ${new Date(event.end).toLocaleTimeString([], {
+                        ${new Date(event.end).toLocaleTimeString("ru-ru", {
                 hour: '2-digit',
                 minute: '2-digit'
             })}
@@ -128,4 +128,20 @@ function showDiffTime(endTimeEvent) {
     const formattedMinutes = String(diffMinutes).padStart(2, '0');
 
     return `${formattedHours}:${formattedMinutes}`;
+}
+
+function getCurrentData(url) {
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Ошибка сети");
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Полученные данные:', data);
+        })
+        .catch(error => {
+            console.error('Ошибка запроса:', error);
+        })
 }
