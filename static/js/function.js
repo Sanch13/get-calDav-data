@@ -98,6 +98,16 @@ function reloadPageOnMinuteSync() {
     }, secondsToNextMinute * 1000);
 }
 
+function reloadPageOnHourSync() {
+    const now = new Date();
+    const minutesToNextHour = 60 - now.getMinutes();
+    const secondsToNextHour = (minutesToNextHour * 60) - now.getSeconds();
+
+    // Таймер до начала следующего часа
+    setTimeout(() => {
+        location.reload();  // Перезагрузка страницы
+    }, secondsToNextHour * 1000);
+}
 
 function equalsTime(events) {
     if (events.length === 1) {
@@ -105,8 +115,8 @@ function equalsTime(events) {
     }
     const nowTime = new Date().getTime();
     const firstEventEndTime = new Date(events[0].end).getTime();
-    console.log("Now time", nowTime);
-    console.log("FIRST time END", firstEventEndTime);
+    // console.log("Now time", nowTime);
+    // console.log("FIRST time END", firstEventEndTime);
 
     if (nowTime >= firstEventEndTime && events[0].status === "reserved" ) {
         return events.slice(1)
@@ -130,8 +140,8 @@ function showDiffTime(endTimeEvent) {
     return `${formattedHours}:${formattedMinutes}`;
 }
 
-function getCurrentData(url) {
-    fetch(url)
+function fetchDataFirstRoom() {
+    return fetch("/api/v1/first/events")
         .then(response => {
             if (!response.ok) {
                 throw new Error("Ошибка сети");
@@ -139,9 +149,71 @@ function getCurrentData(url) {
             return response.json();
         })
         .then(data => {
-            console.log('Полученные данные:', data);
+            updateUI(data);
+            return data;
         })
         .catch(error => {
             console.error('Ошибка запроса:', error);
-        })
+        });
+}
+
+function updateUI(data) {
+    // Обновляем элементы страницы данными из data
+    const events = JSON.parse(data.data_json);
+    const eventsContainer = document.getElementById("events-container");
+    const mainEvents = equalsTime(events);
+    const currentEvent = mainEvents[0];
+
+    const main_window = document.getElementById("main-left");
+    const main_status = document.getElementById("main__status");
+    const main_time = document.getElementById("main__time");
+    const main_timer = document.getElementById("main__timer__text");
+    const main_timer__off = document.getElementById("timer__off");
+
+    console.log("API updateUI", mainEvents.length, mainEvents);
+
+    eventsContainer.textContent = ''
+    main_window.classList.remove("main-left-bg-free", "main-left-bg-reserved")
+
+    main_window.classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
+    main_status.textContent = `${currentEvent.summary}`;
+    main_time.textContent = `
+        ${new Date().toLocaleTimeString('ru-ru', {hour: '2-digit', minute: '2-digit'})} -
+        ${new Date(currentEvent.end).toLocaleTimeString('ru-ru', {hour: '2-digit', minute:
+            '2-digit'})}
+    `;
+    main_timer.textContent = `
+         ${currentEvent.status === "reserved" ? 'Освободится через :' : ''}
+    `;
+    main_timer__off.textContent = currentEvent.status === "reserved" ? showDiffTime(currentEvent) : '';
+
+    if (mainEvents.length === 1) {
+        console.log("API ONLY ONE ITEM");
+        eventsContainer.appendChild(createFirstCardDiv(mainEvents));
+    } else {
+        console.log("API MANY ITEMS");
+        eventsContainer.appendChild(createFirstCardDiv(mainEvents));
+
+        mainEvents.slice(1).forEach(event => {
+            const card = createOtherCardDiv(event);
+            eventsContainer.appendChild(card);
+        });
+    }
+}
+
+function fetchDataEveryMinute() {
+    const now = new Date();
+    const secondsToNextMinute = 60 - now.getSeconds();
+
+    setTimeout(() => {
+        fetchDataFirstRoom().then(() => {
+            updateMoscowTime(); // обновление каждые 60 секунд
+            updateDateTime(); // обновление каждые 60 секунд
+        });
+
+        // Затем продолжаем обновлять каждую минуту
+        setInterval(fetchDataFirstRoom, 60000); // обновление каждые 60 секунд
+        setInterval(updateMoscowTime, 60000); // обновление каждые 60 секунд
+        setInterval(updateDateTime, 60000); // обновление каждые 60 секунд
+    }, secondsToNextMinute * 1000);
 }

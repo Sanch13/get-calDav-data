@@ -116,7 +116,7 @@ def get_sorted_events(events) -> list:
 
 
 def get_sorted_all_events(events):
-    """Возвращает все события текущего дня в json"""
+    """Возвращает все события текущего дня"""
 
     time_now = datetime.now(timezone(timedelta(hours=3)))
     midnight = (time_now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -125,8 +125,6 @@ def get_sorted_all_events(events):
 
     for event in events:
         start_time = event.get("start", midnight)
-
-        print(time_now, start_time)
 
         if time_now < start_time:
             all_events_cur_day.append({
@@ -169,11 +167,9 @@ def generate_hash(data: list) -> str:
     """
     if len(data) == 1 and data[0]["status"] == 'free':
         data[0]["start"] = "start"
-        print("[1 ITEM] ALL TIME IS fREE", data)
     else:
         if data[0]["status"] == 'free':
             data[0]["start"] = "start"
-        print("ADD WITH FREE ITEM", data)
 
     str_bytes = str(data).encode('utf-8')
     return hashlib.sha256(str_bytes).hexdigest()
@@ -181,6 +177,8 @@ def generate_hash(data: list) -> str:
 
 def is_all_time_free_today(events: list) -> bool:
     """
+    Возвращает True если нет никахих событий на текущий день
+
     :param events: Список событий календаря
     :return: Булевое значение
     """
