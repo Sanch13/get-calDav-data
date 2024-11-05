@@ -29,7 +29,7 @@
 html, body {
     font-family: Arial, sans-serif;
     line-height: 1.2;
-    background-image: url("/static/img/ai.png");
+    background-image: url("/static/img/bg_4.png");
     background-size: cover;  /* Заполняет весь экран */
     background-repeat: no-repeat;  /* Не повторяет изображение */
     background-position: center;  /* Центрирует изображение */
@@ -63,11 +63,17 @@ HEADER
     align-items: center;
     width: 70%;
     background: linear-gradient(to right,
-        rgba(0, 0, 0, 1) 0%,       /* Черный цвет слева */
-        rgba(0, 0, 0, 1) 20%,       /* Черный цвет слева */
-        rgba(0, 0, 0, 0) 50%,      /* Прозрачный цвет справа */
-        rgba(0, 0, 0, 1) 80%,      /* Прозрачный цвет справа */
-        rgba(0, 0, 0, 1) 100%        /*!* Завершение черного цвета справа *!*/
+        /* rgb(3, 2, 28,); Цвет бека для хедера. */
+        rgba(3, 2, 28, 1) 0%,       /* Черный цвет слева */
+        rgba(3, 2, 28, 1) 20%,       /* Черный цвет слева */
+        rgba(3, 2, 28, 0) 50%,      /* Прозрачный цвет справа */
+        rgba(3, 2, 28, 1) 80%,      /* Прозрачный цвет справа */
+        rgba(3, 2, 28, 1) 100%        /*!* Завершение черного цвета справа *!*/
+        /*rgba(0, 0, 0, 1) 0%,       !* Черный цвет слева *!*/
+        /*rgba(0, 0, 0, 1) 20%,       !* Черный цвет слева *!*/
+        /*rgba(0, 0, 0, 0) 50%,      !* Прозрачный цвет справа *!*/
+        /*rgba(0, 0, 0, 1) 80%,      !* Прозрачный цвет справа *!*/
+        /*rgba(0, 0, 0, 1) 100%        !*!* Завершение черного цвета справа *!*!*/
     );
 }
 
@@ -96,7 +102,9 @@ HEADER
     justify-content: center;
     align-items: center;
     width: 30%;
-    background-color: rgb(0, 0, 0);
+    /* rgb(3, 2, 28,); Цвет бека для хедера. */
+    background-color: rgb(3, 2, 28);
+    /*background-color: rgb(0, 0, 0);*/
 }
 
 .header__logo__time {

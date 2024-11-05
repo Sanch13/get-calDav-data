@@ -144,7 +144,9 @@ function fetchDataFirstRoom() {
     return fetch("/api/v1/first/events")
         .then(response => {
             if (!response.ok) {
-                throw new Error("Ошибка сети");
+                return response.json().then(errData => {
+                    throw new Error(errData.error || "Ошибка сети");
+                });
             }
             return response.json();
         })
@@ -153,7 +155,7 @@ function fetchDataFirstRoom() {
             return data;
         })
         .catch(error => {
-            console.error('Ошибка запроса:', error);
+            showErrorMessage(error.message);
         });
 }
 
@@ -165,6 +167,7 @@ function updateUI(data) {
     const currentEvent = mainEvents[0];
 
     const main_window = document.getElementById("main-left");
+    const main_title = document.getElementById("main__title");
     const main_status = document.getElementById("main__status");
     const main_time = document.getElementById("main__time");
     const main_timer = document.getElementById("main__timer__text");
@@ -172,10 +175,11 @@ function updateUI(data) {
 
     console.log("API updateUI", mainEvents.length, mainEvents);
 
-    eventsContainer.textContent = ''
-    main_window.classList.remove("main-left-bg-free", "main-left-bg-reserved")
+    eventsContainer.textContent = "";
+    main_window.classList.remove("main-left-bg-free", "main-left-bg-reserved");
 
     main_window.classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
+    main_title.textContent = "Переговорная 1 этаж";
     main_status.textContent = `${currentEvent.summary}`;
     main_time.textContent = `
         ${new Date().toLocaleTimeString('ru-ru', {hour: '2-digit', minute: '2-digit'})} -
@@ -216,4 +220,25 @@ function fetchDataEveryMinute() {
         setInterval(updateMoscowTime, 60000); // обновление каждые 60 секунд
         setInterval(updateDateTime, 60000); // обновление каждые 60 секунд
     }, secondsToNextMinute * 1000);
+}
+
+function showErrorMessage(error) {
+    updateMoscowTime()
+    updateDateTime()
+    const eventsContainer = document.getElementById("events-container");
+    eventsContainer.textContent = '';
+
+    const main_window = document.getElementById("main-left");
+    const main_title = document.getElementById("main__title");
+    const main_status = document.getElementById("main__status");
+    const main_time = document.getElementById("main__time");
+    const main_timer = document.getElementById("main__timer__text");
+    const main_timer__off = document.getElementById("timer__off");
+    main_window.classList.remove("main-left-bg-free", "main-left-bg-reserved");
+    main_status.textContent = "";
+    main_time.textContent = "";
+    main_timer.textContent = "";
+    main_timer__off.textContent = "";
+    console.log(error, error.message, error.error);
+    main_title.textContent = `Не удалось загрузить данные:  ${error}`;
 }

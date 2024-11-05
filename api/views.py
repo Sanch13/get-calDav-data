@@ -24,7 +24,18 @@ class GetCurrentEventsAPIView(views.APIView):
 
     def get(self, request):
         print("API")
-        events_today = connect_to_calendar(**get_caldav_config()).date_search(start=datetime.now())
+
+        # Инициализация переменной для хранения событий
+        events_today = []
+
+        # Попытка получения данных с сервера
+        try:
+            events_today = connect_to_calendar(**get_caldav_config()).date_search(start=datetime.now())
+        except Exception as e:
+            print(f"Ошибка при получении данных с сервера: {e}")
+            return Response(data={"error": f"{e}"},
+                            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
         sorted_events_today = get_sorted_events(events_today)
         sorted_all_events_today = get_sorted_all_events(sorted_events_today)
         hash_value = generate_hash(sorted_all_events_today)
