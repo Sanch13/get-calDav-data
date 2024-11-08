@@ -1,0 +1,47 @@
+{
+    "location": {
+        "name": "Minsk",
+        "region": "Minsk",
+        "country": "Belarus",
+        "lat": 53.9,
+        "lon": 27.5667,
+        "tz_id": "Europe/Minsk",
+        "localtime_epoch": 1731062009,
+        "localtime": "2024-11-08 13:33"
+    },
+    "current": {
+        "last_updated_epoch": 1731061800,
+        "last_updated": "2024-11-08 13:30",
+        "temp_c": 8.3,
+        "temp_f": 46.9,
+        "is_day": 1,
+        "condition": {
+            "text": "\u0421\u043e\u043b\u043d\u0435\u0447\u043d\u043e",
+            "icon": "//cdn.weatherapi.com/weather/64x64/day/113.png",
+            "code": 1000
+        },
+        "wind_mph": 8.9,
+        "wind_kph": 14.4,
+        "wind_degree": 349,
+        "wind_dir": "N",
+        "pressure_mb": 1035.0,
+        "pressure_in": 30.56,
+        "precip_mm": 0.0,
+        "precip_in": 0.0,
+        "humidity": 71,
+        "cloud": 7,
+        "feelslike_c": 5.9,
+        "feelslike_f": 42.6,
+        "windchill_c": 5.9,
+        "windchill_f": 42.6,
+        "heatindex_c": 8.3,
+        "heatindex_f": 46.9,
+        "dewpoint_c": 3.5,
+        "dewpoint_f": 38.2,
+        "vis_km": 10.0,
+        "vis_miles": 6.0,
+        "uv": 0.9,
+        "gust_mph": 11.5,
+        "gust_kph": 18.4
+    }
+}

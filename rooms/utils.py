@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime, timezone, timedelta
 
+import requests
 from dotenv import load_dotenv
 
 import caldav
@@ -183,3 +184,49 @@ def is_all_time_free_today(events: list) -> bool:
     :return: Булевое значение
     """
     return len(events) == 1 and events[0]["status"] == 'free'
+
+
+def get_curses_today_by_api() -> dict:
+    """
+    Возвращает словарь курсов USD, EUR, RUB, CNY.
+    """
+    api_url = 'https://api.nbrb.by/exrates/rates/'
+    curses = {
+        "USD": f"{api_url}USD?parammode=2",
+        "EUR": f"{api_url}EUR?parammode=2",
+        "RUB": f"{api_url}RUB?parammode=2",
+        "CNY": f"{api_url}CNY?parammode=2"
+    }
+
+    curses_today = {}
+
+    for key, url_api in curses.items():
+        try:
+            response = requests.get(url=url_api)
+            if response.status_code == 200:
+                data = response.json()
+                curses_today[key] = f"{data['Cur_OfficialRate']}"
+            else:
+                print(f"Ошибка: для {key} сервер вернул код {response.status_code}")
+        except requests.RequestException as e:
+            print(f"Не удалось получить данные для {key}: {e}")
+
+    return curses_today
+
+
+def get_weather_by_api(api_key_weather, location):
+    URL_WEATHER: str = "https://api.weatherapi.com/v1/current.json"
+    params = {
+        "key": api_key_weather,
+        "q": location,
+        "lang": "ru"
+    }
+    try:
+        response = requests.get(url=URL_WEATHER, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            return data
+        else:
+            print(f"Ошибка: сервер вернул код {response.status_code}")
+    except requests.RequestException as e:
+        print(f"Не удалось получить данные. Ошибка: {e}")

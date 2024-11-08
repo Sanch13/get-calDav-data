@@ -302,4 +302,17 @@ FOOTER
     opacity: 0.5;
     text-align: center;
     margin-top: auto;
+    justify-content: start;
+}
+
+.footer__icons__items {
+    display: flex;
+    justify-content: start;
+    align-items: start; /* Выровнять по верхнему краю футера */
+    height: 80%; /* Занимает 80% от высоты футера */
+}
+
+.footer__icon {
+    display: flex;
+    align-items: center; /* Центрирует иконки внутри каждого элемента */
 }
