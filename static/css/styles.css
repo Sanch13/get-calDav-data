@@ -165,9 +165,9 @@ MAIN
 
 .main-left-bg-reserved {
     background: linear-gradient(to right,
-        rgba(154, 24, 24, 0.5) 0%,
-        rgba(154, 24, 24, 0.5) 50%,
-        rgba(154, 24, 24, 0.5) 100%
+        rgba(189, 5, 12, 0.9) 0%,
+        rgba(121, 19, 19, 0.9) 50%,
+        rgba(154, 24, 24, 0.9) 100%
     );
 }
 
@@ -200,13 +200,21 @@ MAIN
     pointer-events: none;
 }
 
-.main__timer::before {
+.main-left-bg-reserved .main__timer::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 100%; /* Затемняет правую половину */
     background: linear-gradient(to left,
         rgba(0, 0, 0, 0.4) 0%,
         rgba(0, 0, 0, 0.2) 50%,
         rgba(0, 0, 0, 0) 100%);
-    z-index: -1; /* Перемещает под текст */
-    pointer-events: none;
+    );
+    ); /* Градиент от тёмного справа к прозрачному слева */
+    z-index: -1; /* Помещает градиент за текст */
+    pointer-events: none; /* Исключает взаимодействие с псевдоэлементом */
 }
 
 .main__timer {
