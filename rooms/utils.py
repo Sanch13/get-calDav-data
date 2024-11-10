@@ -1,22 +1,19 @@
 import hashlib
 import json
-import os
 from datetime import datetime, timezone, timedelta
 
 import requests
-from dotenv import load_dotenv
 
 import caldav
 from icalendar import Calendar
 
 
-def get_caldav_config() -> dict:
-    """Возвращает словарь с данными для подключения к серверу CalDAV."""
-    load_dotenv()  # Загрузка переменных из .env
+def get_caldav_config(url, username, password) -> dict:
+    """Возвращает словарь с данными для подключения к серверу по протоколу CalDAV."""
     return {
-        "url": os.getenv("CALDAV_URL"),
-        "username": os.getenv("CALDAV_USERNAME"),
-        "password": os.getenv("CALDAV_PASSWORD"),
+        "url": url,
+        "username": username,
+        "password": password,
     }
 
 
@@ -186,7 +183,7 @@ def is_all_time_free_today(events: list) -> bool:
     return len(events) == 1 and events[0]["status"] == 'free'
 
 
-def get_curses_today_by_api() -> dict:
+def get_rates_today_by_api() -> dict:
     """
     Возвращает словарь курсов USD, EUR, RUB, CNY.
     """
@@ -198,23 +195,23 @@ def get_curses_today_by_api() -> dict:
         "CNY": f"{api_url}CNY?parammode=2"
     }
 
-    curses_today = {}
+    rates_today = {}
 
     for key, url_api in curses.items():
         try:
             response = requests.get(url=url_api)
             if response.status_code == 200:
                 data = response.json()
-                curses_today[key] = f"{data['Cur_OfficialRate']}"
+                rates_today[key] = f"{data['Cur_OfficialRate']}"
             else:
                 print(f"Ошибка: для {key} сервер вернул код {response.status_code}")
         except requests.RequestException as e:
             print(f"Не удалось получить данные для {key}: {e}")
 
-    return curses_today
+    return rates_today
 
 
-def get_weather_by_api(api_key_weather, location):
+def get_weather_today_by_api(api_key_weather, location) -> dict:
     URL_WEATHER: str = "https://api.weatherapi.com/v1/current.json"
     params = {
         "key": api_key_weather,

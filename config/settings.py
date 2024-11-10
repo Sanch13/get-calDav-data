@@ -103,3 +103,11 @@ REST_FRAMEWORK = {
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+
+
+# ENV
+CALDAV_URL = os.getenv("CALDAV_URL")
+CALDAV_USERNAME = os.getenv("CALDAV_USERNAME")
+CALDAV_PASSWORD = os.getenv("CALDAV_PASSWORD")
+
+API_KEY_WEATHER = os.getenv("API_KEY_WEATHER")

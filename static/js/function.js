@@ -140,6 +140,72 @@ function showDiffTime(endTimeEvent) {
     return `${formattedHours}:${formattedMinutes}`;
 }
 
+function fetchRatesToday() {
+    return fetch("/api/v1/rates/")
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw new Error(errData.error || "Ошибка сети");
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            showRatesToday(data);
+            return data;
+        })
+        .catch(error => {
+            // showErrorMessage(error.message);
+        });
+}
+
+function fetchDataWheatherToday() {
+    return fetch("/api/v1/weather/")
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw new Error(errData.error || "Ошибка сети");
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            showDataWeatherToday(data);
+            return data;
+        })
+        .catch(error => {
+            // showErrorMessage(error.message);
+        });
+}
+
+function showDataWeatherToday(data) {
+    console.log("WEATHER", data);
+    const createImgElement = `
+        <img src="${data.icon}"
+             alt=""
+             class="footer__img"
+        >
+        <div class="footer__weather" id="footer_weather">${data.tempC > 0 ? '+' + data.tempC : data.tempC}</div>
+    `;
+
+    const footer_weather_block = document.getElementById("footer_weather_block");
+    footer_weather_block.innerHTML = createImgElement;
+}
+
+function showRatesToday(data) {
+    console.log("RATES", data);
+
+    const usd = document.getElementById("footer_usd");
+    const euro = document.getElementById("footer_euro");
+    const rub = document.getElementById("footer_rub");
+    const yuan = document.getElementById("footer_yuan");
+
+    if (usd) usd.textContent = data.USD || "N/A";
+    if (euro) euro.textContent = data.EUR || "N/A";
+    if (rub) rub.textContent = data.RUB || "N/A";
+    if (yuan) yuan.textContent = data.CNY || "N/A";
+}
+
 function fetchDataFirstRoom() {
     return fetch("/api/v1/first/events")
         .then(response => {

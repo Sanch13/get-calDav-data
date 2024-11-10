@@ -5,4 +5,6 @@ app_name = "api"
 
 urlpatterns = [
     path("first/events/", views.GetCurrentEventsAPIView.as_view()),
+    path("rates/", views.GetRatesMoneyView.as_view()),
+    path("weather/", views.GetWeatherView.as_view()),
 ]

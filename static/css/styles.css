@@ -175,7 +175,8 @@ MAIN
 }
 
 .main__title, .main__time {
-    font-size: 5rem;
+    /*font-size: 5rem;*/
+    font-size: clamp(2rem, 2vw, 3rem);
 }
 
 .main__status {
@@ -299,20 +300,51 @@ FOOTER
     display: flex;
     height: 130px;
     width: 100%;
-    opacity: 0.5;
+    /*opacity: 1;*/
     text-align: center;
     margin-top: auto;
     justify-content: start;
 }
 
 .footer__icons__items {
+    padding-left: 50px;
     display: flex;
     justify-content: start;
-    align-items: start; /* Выровнять по верхнему краю футера */
-    height: 80%; /* Занимает 80% от высоты футера */
+    align-items: center; /* Выровнять по верхнему краю футера */
+    gap: 60px;
+    /*height: 80%; !* Занимает 80% от высоты футера *!*/
 }
 
 .footer__icon {
     display: flex;
     align-items: center; /* Центрирует иконки внутри каждого элемента */
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    /*background: black;*/
+    background:  rgba(3, 2, 28, 1) 100%;
+    border-radius: 50%;
+    position: relative;
+}
+
+.footer__img {
+    width: 80px;
+    height: 80px;
+}
+
+.footer__rate, .footer__weather {
+    position: absolute;
+    bottom: 0px;
+    left: 90px;
+    font-size: 1.5rem;
+    color: white;
+    background: rgba(3, 2, 28, 1) 100%;
+    /*background: black;*/
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.footer__icon:nth-of-type(2) .footer__img {
+    margin-right: 35px; /* Сдвиг вправо */
+    transform: translateX(10px); /* Сдвиг вправо на 10px */
 }

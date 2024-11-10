@@ -77,7 +77,35 @@
     <footer class="footer">
         <div class="footer__icons__items">
             <div class="footer__icon">
-                <img src="{% static 'img/dollar-white.svg' %}" alt="">
+                <img src="{% static 'img/usd.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_usd"></div>
+            </div>
+            <div class="footer__icon">
+                <img src="{% static 'img/euro.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_euro"></div>
+            </div>
+            <div class="footer__icon">
+                <img src="{% static 'img/rub.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_rub"></div>
+            </div>
+            <div class="footer__icon">
+                <img src="{% static 'img/yuan.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_yuan"></div>
+            </div>
+            <div class="footer__icon" id="footer_weather_block">
+
             </div>
         </div>
     </footer>
@@ -135,8 +163,14 @@
         //     });
         // }
 
-        fetchDataEveryMinute();
         reloadPageOnHourSync();
+        fetchDataEveryMinute();
+
+        fetchRatesToday();
+        setInterval(fetchRatesToday, 1800000);
+
+        fetchDataWheatherToday();
+        setInterval(fetchDataWheatherToday, 1800000);
     });
 </script>
 {% endblock %}
