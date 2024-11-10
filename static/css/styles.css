@@ -143,7 +143,7 @@ MAIN
 .main-left {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     width: 70%;
     max-height: 100%;
     padding: 0 3rem;
@@ -152,8 +152,8 @@ MAIN
 
 .main-left-bg-free {
     background: linear-gradient(to right,
-        rgba(0, 124, 20, 0.9) 0%,
-        rgba(0, 101, 48, 0.9) 50%,
+        rgba(2, 211, 16, 0.9) 0%,
+        rgba(1, 173, 12, 0.9) 50%,
         rgba(0, 61, 13, 0.9) 100%
     );
     /*background: linear-gradient(to right,*/
@@ -176,12 +176,46 @@ MAIN
     justify-content: center;
     align-items: center;
     font-size: 3rem;
-    height: 200px;
+    height: 230px;
+    position: relative;
+    border-bottom: 3px solid rgba(255, 255, 255, 0.15); /* Светлая полупрозрачная граница */
+    z-index: 1;
+    /*box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); !* Тень под границей *!*/
+    /*padding: 1rem 0; !* Дополнительное пространство вокруг текста *!*/
+}
+
+.main__title::before, .main__time::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%); /* Центрирует по вертикали */
+    width: 100%;
+    height: 1.3em; /* Высота, равная высоте текста */
+    background: linear-gradient(to right,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(0, 0, 0, 0.2) 50%,
+        rgba(0, 0, 0, 0) 100%);
+    z-index: -1; /* Перемещает под текст */
+    pointer-events: none;
+}
+
+.main__timer::before {
+    background: linear-gradient(to left,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(0, 0, 0, 0.2) 50%,
+        rgba(0, 0, 0, 0) 100%);
+    z-index: -1; /* Перемещает под текст */
+    pointer-events: none;
+}
+
+.main__timer {
+    border-bottom: none;
 }
 
 .main__title, .main__time {
-    /*font-size: 5rem;*/
-    font-size: clamp(2rem, 2vw, 3rem);
+    font-size: 5rem;
+    /*font-size: clamp(2rem, 2vw, 5rem);*/
 }
 
 .main__status {
