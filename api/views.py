@@ -27,11 +27,10 @@ class GetCurrentEventsAPIView(views.APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        print("API")
+        print("First API")
 
-        # Попытка получения данных с сервера
         try:
-
+            # Попытка получения данных с сервера
             events_today = connect_to_calendar(**get_caldav_config(
                 url=settings.CALDAV_URL,
                 username=settings.CALDAV_USERNAME,

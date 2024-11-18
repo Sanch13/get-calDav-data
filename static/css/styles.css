@@ -121,7 +121,6 @@ HEADER
     flex-grow: 5;
     color: white;
     font-size: 92px;
-
 }
 
 /****************************
@@ -151,6 +150,10 @@ MAIN
 }
 
 .main-left-bg-free {
+    box-shadow:
+    inset 3px 3px 5px rgba(134, 208, 139, 0.9),   /* Темная внутренняя тень справа и снизу */
+    inset -3px -3px 20px rgba(0, 0, 0, 0.9);
+
     background: linear-gradient(to right,
         rgba(2, 211, 16, 0.9) 0%,
         rgba(1, 173, 12, 0.9) 50%,
@@ -164,6 +167,10 @@ MAIN
 }
 
 .main-left-bg-reserved {
+    box-shadow:
+    inset 3px 3px 5px rgba(208, 99, 99, 0.9),   /* Темная внутренняя тень справа и снизу */
+    inset -3px -3px 20px rgba(0, 0, 0, 0.9);
+
     background: linear-gradient(to right,
         rgba(189, 5, 12, 0.9) 0%,
         rgba(121, 19, 19, 0.9) 50%,
@@ -182,6 +189,14 @@ MAIN
     z-index: 1;
     /*box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); !* Тень под границей *!*/
     /*padding: 1rem 0; !* Дополнительное пространство вокруг текста *!*/
+}
+
+.main__title {
+    font-size: 5rem;
+}
+
+.main__time {
+    font-size: 8rem;
 }
 
 .main__title::before, .main__time::before {
@@ -221,17 +236,19 @@ MAIN
     border-bottom: none;
 }
 
-.main__title, .main__time {
-    font-size: 5rem;
-    /*font-size: clamp(2rem, 2vw, 5rem);*/
-}
-
 .main__status {
     display: flex;
     flex-direction: row;
     justify-content: start;
     align-items: center;
+}
+
+.main_one_line {
     font-size: 5rem;
+}
+
+.main_two_line {
+    font-size: 3rem;
 }
 
 .main__timer {
@@ -248,7 +265,7 @@ MAIN
 }
 
 #timer__off {
-    font-size: 7rem;
+    font-size: 8rem;
 }
 
 /* Правая часть основной части*/
@@ -308,27 +325,37 @@ CARDS
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 90%;
-
+    width: 95%;
 }
 
 .card__time {
     display: flex;
     justify-content: end;
-    font-size: 50px;
-    padding: 3px 10px;
+    font-size: 2.5rem;
+    padding: 2px 10px;
 }
 
 .card__description {
-    padding: 2px 5px;
-    font-size: clamp(24px, 2vw, 30px);
+    padding: 0 5px 2px 5px;
+
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    display: -webkit-box;  /* Используется для поддержки обрезания текста */
+    -webkit-line-clamp: 2;  /* Ограничивает текст двумя строками */
+    -webkit-box-orient: vertical;  /* Определяет ориентацию контейнера */
+    white-space: normal;   /* Отключает ограничение одной строки */
+    text-overflow: ellipsis;  /* Добавляет многоточие, если текст выходит за пределы */
+}
+
+.one_line {
+    font-size: 2.5rem;
+}
+
+.two_line {
+    font-size: 1.7rem;
 }
 
 .card__color {
-    width: 10%;
+    width: 5%;
     background-color: green;
     transition: background-color 0.3s;
 }
@@ -351,6 +378,7 @@ FOOTER
     text-align: center;
     margin-top: auto;
     justify-content: start;
+
 }
 
 .footer__icons__items {

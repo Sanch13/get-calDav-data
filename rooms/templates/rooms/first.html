@@ -62,7 +62,8 @@
                 Переговорная 1 этаж
             </div>
             <div class="main__time" id="main__time"></div>
-            <div class="main__status" id="main__status"></div>
+            <div class="main__status" id="main__status">
+            </div>
             <div class="main__timer">
                 <div class="main__timer__text" id="main__timer__text"></div>
                 <div id="timer__off"></div>
@@ -114,54 +115,10 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        //setInterval(updateMoscowTime, 1000);
-        // Инициализация отображения времени при загрузке страницы
-        //updateMoscowTime();
-        // Обновление даты и дня недели при загрузке страницы
-        //updateDateTime();
-
-        // Устанавливаем таймер для обновления в полночь
-        // setInterval(() => {
-        //     const now = new Date();
-        //     if (now.getHours() === 0 && now.getMinutes() === 0) {
-        //         updateDateTime();
-        //     }
-        // }, 60 * 60 * 1000); // Проверка каждый час
-
-        // CARDS
-        // const jsonString = "{{ data|escapejs }}";
-        // const events = JSON.parse(jsonString);  // Преобразуем JSON-строку в объект JavaScript
-        //
-        // const eventsContainer = document.getElementById("events-container");
-        // const mainEvents = equalsTime(events);
-        // const currentEvent = mainEvents[0]
-        //
-        // console.log(mainEvents.length, mainEvents);
-        //
-        // document.getElementById("main-left").classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
-        // document.getElementById("main__status").textContent = `${currentEvent.summary}`;
-        // document.getElementById("main__time").textContent = `
-        //     ${new Date().toLocaleTimeString('ru-ru', {hour: '2-digit', minute: '2-digit'})} -
-        //     ${new Date(currentEvent.end).toLocaleTimeString('ru-ru', {hour: '2-digit', minute:
-        //         '2-digit'})}
-        // `;
-        // document.getElementById("main__timer__text").textContent = `
-        //      ${currentEvent.status === "reserved" ? 'Освободится через :' : ''}
-        // `;
-        // document.getElementById("timer__off").textContent = currentEvent.status === "reserved" ? showDiffTime(currentEvent) : '';
-        //
-        // if (mainEvents.length === 1) {
-        //     console.log("ONLY ONE ITEM");
-        //     eventsContainer.appendChild(createFirstCardDiv(mainEvents));
-        // } else {
-        //     console.log("MANY ITEMS");
-        //     eventsContainer.appendChild(createFirstCardDiv(mainEvents));
-        //
-        //     mainEvents.slice(1).forEach(event => {
-        //         const card = createOtherCardDiv(event);
-        //         eventsContainer.appendChild(card);
-        //     });
-        // }
+        fetchDataFirstRoom().then(() => {
+            updateMoscowTime();
+            updateDateTime();
+        });
 
         reloadPageOnHourSync();
         fetchDataEveryMinute();
@@ -174,4 +131,3 @@
     });
 </script>
 {% endblock %}
-

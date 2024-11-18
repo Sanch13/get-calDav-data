@@ -66,24 +66,24 @@ function createOtherCardDiv(event) {
     cardDiv.classList.add('card');
 
     // Создаем HTML внутри карточки
-            cardDiv.innerHTML = `
-                <div class="card_main">
-                    <div class="card__time">
-                        ${new Date(event.start).toLocaleTimeString("ru-ru", {
-                hour: '2-digit',
-                minute: '2-digit'
-            })} -
-                        ${new Date(event.end).toLocaleTimeString("ru-ru", {
-                hour: '2-digit',
-                minute: '2-digit'
-            })}
-                    </div>
-                    <div class="card__description">
-                        ${event.summary}
-                    </div>
-                </div>
-                <div class="card__color" style="background-color: ${event.status === 'free' ? 'green' : 'red'};"></div>
-            `;
+    cardDiv.innerHTML = `
+        <div class="card_main">
+            <div class="card__time">
+                ${new Date(event.start).toLocaleTimeString("ru-ru", {
+        hour: '2-digit',
+        minute: '2-digit'
+    })} -
+                ${new Date(event.end).toLocaleTimeString("ru-ru", {
+        hour: '2-digit',
+        minute: '2-digit'
+    })}
+            </div>
+            <div class="card__description ${event.summary.length < 30 ? 'one_line' : 'two_line'}">
+                ${event.summary}
+            </div>
+        </div>
+        <div class="card__color" style="background-color: ${event.status === 'free' ? 'green' : 'red'};"></div>
+    `;
 
     return cardDiv
 }
@@ -105,7 +105,11 @@ function reloadPageOnHourSync() {
 
     // Таймер до начала следующего часа
     setTimeout(() => {
-        location.reload();  // Перезагрузка страницы
+        location.reload();
+        // fetchDataFirstRoom().then(() => {
+        //     updateMoscowTime();
+        //     updateDateTime();
+        // });
     }, secondsToNextHour * 1000);
 }
 
@@ -246,7 +250,7 @@ function updateUI(data) {
 
     main_window.classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
     main_title.textContent = "Переговорная 1 этаж";
-    main_status.textContent = `${currentEvent.summary}`;
+    main_status.textContent = `${currentEvent.summary.length >= 100 ? cutText(currentEvent.summary) : currentEvent.summary}`;
     main_time.textContent = `
         ${new Date().toLocaleTimeString('ru-ru', {hour: '2-digit', minute: '2-digit'})} -
         ${new Date(currentEvent.end).toLocaleTimeString('ru-ru', {hour: '2-digit', minute:
@@ -307,4 +311,8 @@ function showErrorMessage(error) {
     main_timer__off.textContent = "";
     console.log(error, error.message, error.error);
     main_title.textContent = `Не удалось загрузить данные:  ${error}`;
+}
+
+function cutText(txt) {
+    return txt.slice(0, 90) + "...";
 }
