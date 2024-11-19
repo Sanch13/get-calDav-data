@@ -57,7 +57,7 @@
 
     <div class="main">
         <main class="main-left" id="main-left">
-            <div class="main__title">
+            <div class="main__title" id="main__title">
                 Переговорная 3 этаж
             </div>
             <div class="main__time" id="main__time"></div>
@@ -73,62 +73,70 @@
         </aside>
     </div>
 
-    <footer class="footer"></footer>
-</div>
+    <footer class="footer">
+        <div class="footer__icons__items">
+            <div class="footer__icon">
+                <img src="{% static 'img/usd.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_usd"></div>
+            </div>
+            <div class="footer__icon">
+                <img src="{% static 'img/euro.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_euro"></div>
+            </div>
+            <div class="footer__icon">
+                <img src="{% static 'img/rub.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_rub"></div>
+            </div>
+            <div class="footer__icon">
+                <img src="{% static 'img/yuan.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_yuan"></div>
+            </div>
+            <div class="footer__icon" id="footer_weather_block">
 
+            </div>
+        </div>
+    </footer>
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        //setInterval(updateMoscowTime, 1000);
-        // Инициализация отображения времени при загрузке страницы
-        //updateMoscowTime();
-        // Обновление даты и дня недели при загрузке страницы
-        //updateDateTime();
+        function fetchThirdEventsEveryMinute() {
+            fetchDataThirdRoom();
+            updateMoscowTime();
+            updateDateTime();
 
-        // Устанавливаем таймер для обновления в полночь
-        // setInterval(() => {
-        //     const now = new Date();
-        //     if (now.getHours() === 0 && now.getMinutes() === 0) {
-        //         updateDateTime();
-        //     }
-        // }, 60 * 60 * 1000); // Проверка каждый час
+            const now = new Date();
+            const secondsToNextMinute = 60 - now.getSeconds();
 
-        // CARDS
-        // const jsonString = "{{ data|escapejs }}";
-        // const events = JSON.parse(jsonString);  // Преобразуем JSON-строку в объект JavaScript
-        //
-        // const eventsContainer = document.getElementById("events-container");
-        // const mainEvents = equalsTime(events);
-        // const currentEvent = mainEvents[0]
-        //
-        // console.log(mainEvents.length, mainEvents);
-        //
-        // document.getElementById("main-left").classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
-        // document.getElementById("main__status").textContent = `${currentEvent.summary}`;
-        // document.getElementById("main__time").textContent = `
-        //     ${new Date().toLocaleTimeString('ru-ru', {hour: '2-digit', minute: '2-digit'})} -
-        //     ${new Date(currentEvent.end).toLocaleTimeString('ru-ru', {hour: '2-digit', minute:
-        //         '2-digit'})}
-        // `;
-        // document.getElementById("main__timer__text").textContent = `
-        //      ${currentEvent.status === "reserved" ? 'Освободится через :' : ''}
-        // `;
-        // document.getElementById("timer__off").textContent = currentEvent.status === "reserved" ? showDiffTime(currentEvent) : '';
-        //
-        // if (mainEvents.length === 1) {
-        //     console.log("ONLY ONE ITEM");
-        //     eventsContainer.appendChild(createFirstCardDiv(mainEvents));
-        // } else {
-        //     console.log("MANY ITEMS");
-        //     eventsContainer.appendChild(createFirstCardDiv(mainEvents));
-        //
-        //     mainEvents.slice(1).forEach(event => {
-        //         const card = createOtherCardDiv(event);
-        //         eventsContainer.appendChild(card);
-        //     });
-        // }
+            setTimeout(() => {
+                setInterval(() => {
+                    fetchDataThirdRoom();
+                    updateMoscowTime();
+                    updateDateTime();
+                }, 60000);
+            }, secondsToNextMinute * 1000);
+        }
 
+        fetchThirdEventsEveryMinute();
+        reloadPageOnHourSync();
 
+        fetchRatesToday();
+        setInterval(fetchRatesToday, 1800000);
+
+        fetchDataWheatherToday();
+        setInterval(fetchDataWheatherToday, 1800000);
     });
 </script>
 

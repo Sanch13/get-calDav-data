@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -104,10 +105,20 @@ REST_FRAMEWORK = {
     ),
 }
 
+NOW = datetime.today()
+MIDNIGHT = (NOW + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
 # ENV
 CALDAV_URL = os.getenv("CALDAV_URL")
 CALDAV_USERNAME = os.getenv("CALDAV_USERNAME")
 CALDAV_PASSWORD = os.getenv("CALDAV_PASSWORD")
+
+CALDAV_FIRST_FLOOR_URL = os.getenv("CALDAV_FIRST_FLOOR_URL")
+CALDAV_FIRST_FLOOR_USERNAME = os.getenv("CALDAV_FIRST_FLOOR_USERNAME")
+CALDAV_FIRST_FLOOR_PASSWORD = os.getenv("CALDAV_FIRST_FLOOR_PASSWORD")
+
+CALDAV_THIRD_FLOOR_URL = os.getenv("CALDAV_THIRD_FLOOR_URL")
+CALDAV_THIRD_FLOOR_USERNAME = os.getenv("CALDAV_THIRD_FLOOR_USERNAME")
+CALDAV_THIRD_FLOOR_PASSWORD = os.getenv("CALDAV_THIRD_FLOOR_PASSWORD")
 
 API_KEY_WEATHER = os.getenv("API_KEY_WEATHER")

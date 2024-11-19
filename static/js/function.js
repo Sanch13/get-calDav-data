@@ -119,8 +119,6 @@ function equalsTime(events) {
     }
     const nowTime = new Date().getTime();
     const firstEventEndTime = new Date(events[0].end).getTime();
-    // console.log("Now time", nowTime);
-    // console.log("FIRST time END", firstEventEndTime);
 
     if (nowTime >= firstEventEndTime && events[0].status === "reserved" ) {
         return events.slice(1)
@@ -183,7 +181,6 @@ function fetchDataWheatherToday() {
 }
 
 function showDataWeatherToday(data) {
-    console.log("WEATHER", data);
     const createImgElement = `
         <img src="${data.icon}"
              alt=""
@@ -197,8 +194,6 @@ function showDataWeatherToday(data) {
 }
 
 function showRatesToday(data) {
-    console.log("RATES", data);
-
     const usd = document.getElementById("footer_usd");
     const euro = document.getElementById("footer_euro");
     const rub = document.getElementById("footer_rub");
@@ -212,6 +207,25 @@ function showRatesToday(data) {
 
 function fetchDataFirstRoom() {
     return fetch("/api/v1/first/events")
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw new Error(errData.error || "Ошибка сети");
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            updateUI(data);
+            return data;
+        })
+        .catch(error => {
+            showErrorMessage(error.message);
+        });
+}
+
+function fetchDataThirdRoom() {
+    return fetch("/api/v1/third/events")
         .then(response => {
             if (!response.ok) {
                 return response.json().then(errData => {
@@ -243,14 +257,13 @@ function updateUI(data) {
     const main_timer = document.getElementById("main__timer__text");
     const main_timer__off = document.getElementById("timer__off");
 
-    console.log("API updateUI", mainEvents.length, mainEvents);
-
     eventsContainer.textContent = "";
     main_window.classList.remove("main-left-bg-free", "main-left-bg-reserved");
 
     main_window.classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
-    main_title.textContent = "Переговорная 1 этаж";
+    // main_title.textContent = "Переговорная 1 этаж";
     main_status.textContent = `${currentEvent.summary.length >= 100 ? cutText(currentEvent.summary) : currentEvent.summary}`;
+    main_status.classList.add(`${currentEvent.summary.length >= 35 ? 'main_two_line' : 'main_one_line' }`)
     main_time.textContent = `
         ${new Date().toLocaleTimeString('ru-ru', {hour: '2-digit', minute: '2-digit'})} -
         ${new Date(currentEvent.end).toLocaleTimeString('ru-ru', {hour: '2-digit', minute:
@@ -262,10 +275,8 @@ function updateUI(data) {
     main_timer__off.textContent = currentEvent.status === "reserved" ? showDiffTime(currentEvent) : '';
 
     if (mainEvents.length === 1) {
-        console.log("API ONLY ONE ITEM");
         eventsContainer.appendChild(createFirstCardDiv(mainEvents));
     } else {
-        console.log("API MANY ITEMS");
         eventsContainer.appendChild(createFirstCardDiv(mainEvents));
 
         mainEvents.slice(1).forEach(event => {
