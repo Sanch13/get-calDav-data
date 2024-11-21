@@ -112,31 +112,13 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        function fetchThirdEventsEveryMinute() {
-            fetchDataThirdRoom();
-            updateMoscowTime();
-            updateDateTime();
-
-            const now = new Date();
-            const secondsToNextMinute = 60 - now.getSeconds();
-
-            setTimeout(() => {
-                setInterval(() => {
-                    fetchDataThirdRoom();
-                    updateMoscowTime();
-                    updateDateTime();
-                }, 60000);
-            }, secondsToNextMinute * 1000);
-        }
-
         fetchThirdEventsEveryMinute();
-        reloadPageOnHourSync();
 
         fetchRatesToday();
         setInterval(fetchRatesToday, 1800000);
 
-        fetchDataWheatherToday();
-        setInterval(fetchDataWheatherToday, 1800000);
+        fetchDataWeatherToday();
+        setInterval(fetchDataWeatherToday, 1800000);
     });
 </script>
 

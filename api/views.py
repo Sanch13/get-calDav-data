@@ -21,7 +21,7 @@ from rooms.utils import (
 )
 
 
-class GetCurrentEventsAPIView(views.APIView):
+class GetCurrentFirstEventsAPIView(views.APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):

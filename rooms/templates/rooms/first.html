@@ -115,31 +115,16 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        function fetchFirstEventsEveryMinute() {
-            fetchDataFirstRoom();
-            updateMoscowTime();
-            updateDateTime();
-
-            const now = new Date();
-            const secondsToNextMinute = 60 - now.getSeconds();
-
-            setTimeout(() => {
-                setInterval(() => {
-                    fetchDataFirstRoom();
-                    updateMoscowTime();
-                    updateDateTime();
-                }, 60000);
-            }, secondsToNextMinute * 1000);
-        }
-
         fetchFirstEventsEveryMinute();
-        reloadPageOnHourSync();
 
+        // Функции для обновления курсов валют
         fetchRatesToday();
         setInterval(fetchRatesToday, 1800000);
 
-        fetchDataWheatherToday();
-        setInterval(fetchDataWheatherToday, 1800000);
-    });
+        // Функции для обновления данных о погоде
+        fetchDataWeatherToday();
+        setInterval(fetchDataWeatherToday, 1800000);
+});
 </script>
+
 {% endblock %}

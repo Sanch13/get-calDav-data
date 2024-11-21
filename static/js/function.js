@@ -88,31 +88,6 @@ function createOtherCardDiv(event) {
     return cardDiv
 }
 
-function reloadPageOnMinuteSync() {
-    const now = new Date();
-    const secondsToNextMinute = 60 - now.getSeconds();
-
-    // Таймер до следующей минуты
-    setTimeout(() => {
-        location.reload();  // Перезагрузка страницы
-    }, secondsToNextMinute * 1000);
-}
-
-function reloadPageOnHourSync() {
-    const now = new Date();
-    const minutesToNextHour = 60 - now.getMinutes();
-    const secondsToNextHour = (minutesToNextHour * 60) - now.getSeconds();
-
-    // Таймер до начала следующего часа
-    setTimeout(() => {
-        location.reload();
-        // fetchDataFirstRoom().then(() => {
-        //     updateMoscowTime();
-        //     updateDateTime();
-        // });
-    }, secondsToNextHour * 1000);
-}
-
 function equalsTime(events) {
     if (events.length === 1) {
         return events
@@ -120,7 +95,7 @@ function equalsTime(events) {
     const nowTime = new Date().getTime();
     const firstEventEndTime = new Date(events[0].end).getTime();
 
-    if (nowTime >= firstEventEndTime && events[0].status === "reserved" ) {
+    if (nowTime >= firstEventEndTime && events[0].status === "reserved") {
         return events.slice(1)
     } else {
         return events
@@ -161,7 +136,7 @@ function fetchRatesToday() {
         });
 }
 
-function fetchDataWheatherToday() {
+function fetchDataWeatherToday() {
     return fetch("/api/v1/weather/")
         .then(response => {
             if (!response.ok) {
@@ -263,11 +238,13 @@ function updateUI(data) {
     main_window.classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
     // main_title.textContent = "Переговорная 1 этаж";
     main_status.textContent = `${currentEvent.summary.length >= 100 ? cutText(currentEvent.summary) : currentEvent.summary}`;
-    main_status.classList.add(`${currentEvent.summary.length >= 35 ? 'main_two_line' : 'main_one_line' }`)
+    main_status.classList.add(`${currentEvent.summary.length >= 35 ? 'main_two_line' : 'main_one_line'}`)
     main_time.textContent = `
         ${new Date().toLocaleTimeString('ru-ru', {hour: '2-digit', minute: '2-digit'})} -
-        ${new Date(currentEvent.end).toLocaleTimeString('ru-ru', {hour: '2-digit', minute:
-            '2-digit'})}
+        ${new Date(currentEvent.end).toLocaleTimeString('ru-ru', {
+        hour: '2-digit', minute:
+            '2-digit'
+    })}
     `;
     main_timer.textContent = `
          ${currentEvent.status === "reserved" ? 'Освободится через :' : ''}
@@ -286,21 +263,53 @@ function updateUI(data) {
     }
 }
 
-function fetchDataEveryMinute() {
+function getLocalTime() {
+    const date = new Date();
+    const moscowOffset = 3 * 60; // 3 часа в минутах
+    const localOffset = date.getTimezoneOffset(); // Локальное смещение от UTC в минутах
+    const moscowTime = new Date(
+        date.getTime() + (moscowOffset + localOffset) * 60000
+    );
+    const hours = moscowTime.getHours().toString().padStart(2, "0");
+    const minutes = moscowTime
+        .getMinutes()
+        .toString()
+        .padStart(2, "0");
+    const seconds = moscowTime
+        .getSeconds()
+        .toString()
+        .padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`
+}
+
+function fetchFirstEventsEveryMinute() {
     const now = new Date();
     const secondsToNextMinute = 60 - now.getSeconds();
 
     setTimeout(() => {
-        fetchDataFirstRoom().then(() => {
-            updateMoscowTime(); // обновление каждые 60 секунд
-            updateDateTime(); // обновление каждые 60 секунд
-        });
+        setInterval(() => {
+            fetchDataFirstRoom()
+                .then(() => {
+                    updateMoscowTime();
+                    updateDateTime();
+                });
+        }, 60000); // Интервал в 60 секунд
+    }, secondsToNextMinute * 1000); // Задержка до начала следующей минуты
+}
 
-        // Затем продолжаем обновлять каждую минуту
-        setInterval(fetchDataFirstRoom, 60000); // обновление каждые 60 секунд
-        setInterval(updateMoscowTime, 60000); // обновление каждые 60 секунд
-        setInterval(updateDateTime, 60000); // обновление каждые 60 секунд
-    }, secondsToNextMinute * 1000);
+function fetchThirdEventsEveryMinute() {
+    const now = new Date();
+    const secondsToNextMinute = 60 - now.getSeconds();
+
+    setTimeout(() => {
+        setInterval(() => {
+            fetchDataThirdRoom()
+                .then(() => {
+                    updateMoscowTime();
+                    updateDateTime();
+                });
+        }, 60000); // Интервал в 60 секунд
+    }, secondsToNextMinute * 1000); // Задержка до начала следующей минуты
 }
 
 function showErrorMessage(error) {

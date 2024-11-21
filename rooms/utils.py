@@ -22,7 +22,7 @@ def connect_to_calendar(url, username, password):
     Подключается к календарю с использованием DAVClient и возвращает объект календаря.
     """
     try:
-        with caldav.DAVClient(url=url, username=username, password=password, ssl_verify_cert=False) as client:
+        with caldav.DAVClient(url=url, username=username, password=password) as client:
             my_calendar = client.calendar(url=url)
             return my_calendar
     except Exception as e:

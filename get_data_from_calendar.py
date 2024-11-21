@@ -60,8 +60,7 @@ date_now = datetime.now()
 with caldav.DAVClient(
         url=credentials.get("url"),
         username=credentials.get("username"),
-        password=credentials.get("password"),
-        ssl_verify_cert=False) as client:
+        password=credentials.get("password")) as client:
 
     my_calendar = client.calendar(url=credentials.get("url"))
 
