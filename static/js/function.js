@@ -78,7 +78,7 @@ function createOtherCardDiv(event) {
         minute: '2-digit'
     })}
             </div>
-            <div class="card__description ${event.summary.length < 30 ? 'one_line' : 'two_line'}">
+            <div class="card__description ${event.summary.length < 25 ? 'one_line' : 'two_line'}">
                 ${event.summary}
             </div>
         </div>
@@ -191,6 +191,7 @@ function fetchDataFirstRoom() {
             return response.json();
         })
         .then(data => {
+            console.log(getLocalTime(), data);
             updateUI(data);
             return data;
         })
@@ -203,6 +204,7 @@ function fetchDataThirdRoom() {
     return fetch("/api/v1/third/events")
         .then(response => {
             if (!response.ok) {
+                console.log(getLocalTime(), typeof response, typeof response.json(), response.json());
                 return response.json().then(errData => {
                     throw new Error(errData.error || "Ошибка сети");
                 });
@@ -210,6 +212,7 @@ function fetchDataThirdRoom() {
             return response.json();
         })
         .then(data => {
+            console.log(getLocalTime());
             updateUI(data);
             return data;
         })
@@ -219,7 +222,9 @@ function fetchDataThirdRoom() {
 }
 
 function updateUI(data) {
+    // console.log(typeof data, data);
     // Обновляем элементы страницы данными из data
+    // const events = data;
     const events = JSON.parse(data.data_json);
     const eventsContainer = document.getElementById("events-container");
     const mainEvents = equalsTime(events);
@@ -280,6 +285,30 @@ function getLocalTime() {
         .toString()
         .padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`
+}
+
+function updateDataThirdRoom() {
+    let now = new Date();
+    let msUntilNextMinute = ((60 - now.getSeconds()) * 1000);
+
+    setTimeout(function () {
+        fetchDataThirdRoom();
+        updateMoscowTime();
+        updateDateTime();
+        updateDataThirdRoom();
+    }, msUntilNextMinute);
+}
+
+function updateDataFirstRoom() {
+    let now = new Date();
+    let msUntilNextMinute = ((60 - now.getSeconds()) * 1000);
+
+    setTimeout(function () {
+        fetchDataFirstRoom();
+        updateMoscowTime();
+        updateDateTime();
+        updateDataThirdRoom();
+    }, msUntilNextMinute);
 }
 
 function fetchFirstEventsEveryMinute() {

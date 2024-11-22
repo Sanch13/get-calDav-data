@@ -8,9 +8,11 @@ from dotenv import load_dotenv
 
 from datetime import datetime, timedelta
 
-# from rooms.utils import (
-#     connect_to_calendar,
-# )
+from rooms.utils import (
+    connect_to_calendar,
+    get_sorted_events,
+    get_sorted_all_events,
+)
 
 locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')  # Установка русской локали
 
@@ -72,15 +74,26 @@ with caldav.DAVClient(
 #     ssl_verify_cert=False
 # ).date_search(start=date_now, end=None)
 
+NOW = datetime.today()
+MIDNIGHT = (NOW + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+
 if __name__ == '__main__':
     print()
     print(my_calendar)
-    print(my_calendar.date_search(start=date_now, end=None, verify_expand=False))
+    events_today = my_calendar.date_search(start=NOW, end=MIDNIGHT)
 
-    now = datetime.today()
-    midhigth = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    print(now)
-    print(midhigth)
+    sorted_events_today = get_sorted_events(events_today)
+    # print(sorted_events_today)
+    for event in sorted_events_today:
+        print({event.get("start"): event.get("summary")})
+    sorted_all_events_today = get_sorted_all_events(sorted_events_today)
+    # for event in sorted_all_events_today:
+    #     print({event.get("start"), event.get("summary")})
+
+    # now = datetime.today()
+    # midhigth = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    # print(now)
+    # print(midhigth)
 
     # print(all_events_now)
 
@@ -97,4 +110,4 @@ if __name__ == '__main__':
     #     print(datetime.fromisoformat(event["start"]).strftime("%H:%M"),
     #           datetime.fromisoformat(event["end"]).strftime("%H:%M"),
     #           event["status"],
-    #           event["summary"])
+    #           event["summary"])cal.
