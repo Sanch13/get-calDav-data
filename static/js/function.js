@@ -204,7 +204,6 @@ function fetchDataThirdRoom() {
     return fetch("/api/v1/third/events")
         .then(response => {
             if (!response.ok) {
-                console.log(getLocalTime(), typeof response, typeof response.json(), response.json());
                 return response.json().then(errData => {
                     throw new Error(errData.error || "Ошибка сети");
                 });
@@ -212,7 +211,7 @@ function fetchDataThirdRoom() {
             return response.json();
         })
         .then(data => {
-            console.log(getLocalTime());
+            console.log(getLocalTime(), data);
             updateUI(data);
             return data;
         })
@@ -222,9 +221,7 @@ function fetchDataThirdRoom() {
 }
 
 function updateUI(data) {
-    // console.log(typeof data, data);
     // Обновляем элементы страницы данными из data
-    // const events = data;
     const events = JSON.parse(data.data_json);
     const eventsContainer = document.getElementById("events-container");
     const mainEvents = equalsTime(events);
@@ -307,7 +304,7 @@ function updateDataFirstRoom() {
         fetchDataFirstRoom();
         updateMoscowTime();
         updateDateTime();
-        updateDataThirdRoom();
+        updateDataFirstRoom();
     }, msUntilNextMinute);
 }
 

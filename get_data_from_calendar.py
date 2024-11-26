@@ -3,7 +3,7 @@ import json
 import locale
 
 import caldav
-
+from config.settings import NOW, MIDNIGHT
 from dotenv import load_dotenv
 
 from datetime import datetime, timedelta
@@ -35,9 +35,9 @@ def get_caldav_config_miran_bel_com() -> dict:
     load_dotenv()  # Загрузка переменных из .env
 
     return {
-        "url": os.getenv("CALDAV_FIRST_FLOOR_URL"),
-        "username": os.getenv("CALDAV_FIRST_FLOOR_USERNAME"),
-        "password": os.getenv("CALDAV_FIRST_FLOOR_PASSWORD"),
+        "url": os.getenv("CALDAV_THIRD_FLOOR_URL"),
+        "username": os.getenv("CALDAV_THIRD_FLOOR_USERNAME"),
+        "password": os.getenv("CALDAV_THIRD_FLOOR_PASSWORD"),
     }
 
 
@@ -74,21 +74,25 @@ with caldav.DAVClient(
 #     ssl_verify_cert=False
 # ).date_search(start=date_now, end=None)
 
-NOW = datetime.today()
-MIDNIGHT = (NOW + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+# NOW = datetime.today()
+# MIDNIGHT = (NOW + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+
 
 if __name__ == '__main__':
+    print(NOW, MIDNIGHT)
+
     print()
     print(my_calendar)
     events_today = my_calendar.date_search(start=NOW, end=MIDNIGHT)
 
     sorted_events_today = get_sorted_events(events_today)
     # print(sorted_events_today)
-    for event in sorted_events_today:
-        print({event.get("start"): event.get("summary")})
+    # for event in sorted_events_today:
+    #     print({event.get("start"): event.get("summary")})
     sorted_all_events_today = get_sorted_all_events(sorted_events_today)
-    # for event in sorted_all_events_today:
-    #     print({event.get("start"), event.get("summary")})
+    print()
+    for event in sorted_all_events_today:
+        print({event.get("start"), event.get("summary")})
 
     # now = datetime.today()
     # midhigth = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -111,3 +115,34 @@ if __name__ == '__main__':
     #           datetime.fromisoformat(event["end"]).strftime("%H:%M"),
     #           event["status"],
     #           event["summary"])cal.
+
+
+
+'''
+Как избежать кеширования
+
+Если вы подозреваете, что сервер или клиент кеширует ответы, 
+есть несколько способов предотвратить кеширование:
+
+Использовать уникальные параметры в URL-запросах: Например, можно добавить временную метку к запросу:
+
+url_with_timestamp = f"{url}?timestamp={datetime.now().timestamp()}"
+
+Это заставит сервер считать запрос уникальным, избегая кеширования.
+
+Добавить заголовки для предотвращения кеширования: Если сервер или клиент поддерживает кеширование, 
+можно добавить заголовки для указания, чтобы кеширование не происходило:
+
+headers = {
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
+}
+
+# Пример использования с requests:
+response = requests.get(url, headers=headers)
+
+Настроить сервер для отключения кеширования: Если вы управляете сервером CalDAV, можно настроить 
+его так, чтобы он не кешировал запросы или обновлял данные в реальном времени. Это зависит от 
+конфигурации сервера CalDAV.
+'''
