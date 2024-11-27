@@ -272,17 +272,18 @@ function getLocalTime() {
     const moscowTime = new Date(
         date.getTime() + (moscowOffset + localOffset) * 60000
     );
+
+    const day = moscowTime.getDate().toString().padStart(2, "0");
+    const month = (moscowTime.getMonth() + 1).toString().padStart(2, "0"); // Месяцы начинаются с 0, поэтому прибавляем 1
+    const year = moscowTime.getFullYear();
+
     const hours = moscowTime.getHours().toString().padStart(2, "0");
-    const minutes = moscowTime
-        .getMinutes()
-        .toString()
-        .padStart(2, "0");
-    const seconds = moscowTime
-        .getSeconds()
-        .toString()
-        .padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`
+    const minutes = moscowTime.getMinutes().toString().padStart(2, "0");
+    const seconds = moscowTime.getSeconds().toString().padStart(2, "0");
+
+    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
 }
+
 
 function updateDataThirdRoom() {
     let now = new Date();

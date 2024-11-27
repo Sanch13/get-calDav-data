@@ -1,5 +1,4 @@
 import os
-from datetime import datetime, timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -104,9 +103,6 @@ REST_FRAMEWORK = {
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
-
-NOW = datetime.today()
-MIDNIGHT = (NOW + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
 # ENV
 CALDAV_URL = os.getenv("CALDAV_URL")

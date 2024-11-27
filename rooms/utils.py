@@ -113,6 +113,12 @@ def get_sorted_events(events) -> list:
         return []
 
 
+def get_now_and_midnight():
+    now = datetime.now()
+    midnight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    return now, midnight
+
+
 def get_sorted_all_events(events):
     """Возвращает все события текущего дня"""
 
