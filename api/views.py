@@ -23,14 +23,12 @@ class GetCurrentFirstEventsAPIView(views.APIView):
 
     def get(self, request):
         try:
-
             now, midnight = get_now_and_midnight()
-            # Попытка получения данных с сервера
             events_today = connect_to_calendar(**get_caldav_config(
                 url=settings.CALDAV_FIRST_FLOOR_URL,
                 username=settings.CALDAV_FIRST_FLOOR_USERNAME,
                 password=settings.CALDAV_FIRST_FLOOR_PASSWORD,
-            )).date_search(start=now, end=midnight, verify_expand=False)
+            )).date_search(start=now, end=midnight)
 
             sorted_events_today = get_sorted_events(events_today)
             sorted_all_events_today = get_sorted_all_events(sorted_events_today)
@@ -50,12 +48,11 @@ class GetCurrentThirdEventsAPIView(views.APIView):
     def get(self, request):
         try:
             now, midnight = get_now_and_midnight()
-            # Попытка получения данных с сервера
             events_today = connect_to_calendar(**get_caldav_config(
                 url=settings.CALDAV_THIRD_FLOOR_URL,
                 username=settings.CALDAV_THIRD_FLOOR_USERNAME,
                 password=settings.CALDAV_THIRD_FLOOR_PASSWORD,
-            )).date_search(start=now, end=midnight, verify_expand=False)
+            )).date_search(start=now, end=midnight)
 
             sorted_events_today = get_sorted_events(events_today)
             sorted_all_events_today = get_sorted_all_events(sorted_events_today)

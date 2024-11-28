@@ -19,10 +19,19 @@ def get_caldav_config(url, username, password) -> dict:
 
 def connect_to_calendar(url, username, password):
     """
-    Подключается к календарю с использованием DAVClient и возвращает объект календаря.
+    Подключается к серверному календарю с использованием DAVClient и возвращает объект календаря.
     """
+    headers = {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    }
     try:
-        with caldav.DAVClient(url=url, username=username, password=password) as client:
+        with caldav.DAVClient(url=url,
+                              username=username,
+                              password=password,
+                              headers=headers
+                              ) as client:
             my_calendar = client.calendar(url=url)
             return my_calendar
     except Exception as e:
@@ -120,32 +129,33 @@ def get_now_and_midnight():
 
 
 def get_sorted_all_events(events):
-    """Возвращает все события текущего дня"""
+    """Возвращает все отсортированные события текущего дня."""
 
     time_now = datetime.now(timezone(timedelta(hours=3)))
-    midnight = (time_now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    midnight = time_now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
     all_events_cur_day = []
-
     for event in events:
         start_time = event.get("start", midnight)
+        end_time = event.get("end", midnight)
 
-        if time_now < start_time:
+        if start_time < midnight and end_time > time_now:
+            if time_now < start_time:
+                all_events_cur_day.append({
+                    "summary": "СВОБОДНО",
+                    "start": time_now.isoformat(),
+                    "end": start_time.isoformat(),
+                    "status": "free"
+                })
+
             all_events_cur_day.append({
-                "summary": "СВОБОДНО",
-                "start": time_now.isoformat(),
-                "end": start_time.isoformat(),
-                "status": "free"
+                "summary": event.get("summary"),
+                "start": start_time.isoformat(),
+                "end": end_time.isoformat(),
+                "status": event.get("status")
             })
 
-        all_events_cur_day.append({
-            "summary": event.get("summary"),
-            "start": start_time.isoformat(),
-            "end": event.get("end").isoformat(),
-            "status": event.get("status")
-        })
-
-        time_now = event.get("end")
+            time_now = max(time_now, end_time)
 
     if time_now < midnight:
         all_events_cur_day.append({

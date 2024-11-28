@@ -3,10 +3,9 @@ import json
 import locale
 
 import caldav
-from config.settings import NOW, MIDNIGHT
 from dotenv import load_dotenv
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from rooms.utils import (
     connect_to_calendar,
@@ -35,10 +34,16 @@ def get_caldav_config_miran_bel_com() -> dict:
     load_dotenv()  # Загрузка переменных из .env
 
     return {
-        "url": os.getenv("CALDAV_THIRD_FLOOR_URL"),
-        "username": os.getenv("CALDAV_THIRD_FLOOR_USERNAME"),
-        "password": os.getenv("CALDAV_THIRD_FLOOR_PASSWORD"),
+        "url": os.getenv("CALDAV_FIRST_FLOOR_URL"),
+        "username": os.getenv("CALDAV_FIRST_FLOOR_USERNAME"),
+        "password": os.getenv("CALDAV_FIRST_FLOOR_PASSWORD"),
     }
+
+
+def get_now_and_midnight():
+    now = datetime.now()
+    midnight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    return now, midnight
 
 
 def connect_to_calendar(url, username, password, ssl_verify_cert=True):
@@ -79,20 +84,39 @@ with caldav.DAVClient(
 
 
 if __name__ == '__main__':
-    print(NOW, MIDNIGHT)
+    # now, midnight = get_now_and_midnight()
+    # midnight = (now + timedelta(days=1)).replace(hour=23, minute=59, second=59, microsecond=0)
+    # Установка временной зоны UTC+3
+    tz = timezone(timedelta(hours=3))
+
+    # Начало дня (полночь текущего дня)
+    start = datetime.now(tz).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Конец дня (полночь следующего дня)
+    end = start + timedelta(days=1)
+
+    print(f"Start: {start}, End: {end}")
+
 
     print()
     print(my_calendar)
-    events_today = my_calendar.date_search(start=NOW, end=MIDNIGHT)
+    # print(f"{now} - {midnight}")
+    print(f"{start} - {end}")
+    events_today = my_calendar.date_search(start=start, end=end)
+    print(f"events_today {len(events_today)} {events_today}")
+    # for event in events_today:
+    #     print({event.get("start"), event.get("summary")})
 
     sorted_events_today = get_sorted_events(events_today)
-    # print(sorted_events_today)
-    # for event in sorted_events_today:
-    #     print({event.get("start"): event.get("summary")})
+
+    print(f"sorted_events_today {len(sorted_events_today)}")
+    for event in sorted_events_today:
+        print(f'''{event.get("start").strftime('%Y-%m-%d %H:%M')}:{event.get("end").strftime('%Y-%m-%d %H:%M')} {event.get("summary")}''')
+
     sorted_all_events_today = get_sorted_all_events(sorted_events_today)
-    print()
+    print(f"sorted_all_events_today {len(sorted_all_events_today)} {sorted_all_events_today}")
     for event in sorted_all_events_today:
-        print({event.get("start"), event.get("summary")})
+        print(f'''{event.get("start")}:{event.get("end")} {event.get("summary")}''')
 
     # now = datetime.today()
     # midhigth = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)

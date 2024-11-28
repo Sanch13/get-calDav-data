@@ -181,7 +181,14 @@ function showRatesToday(data) {
 }
 
 function fetchDataFirstRoom() {
-    return fetch("/api/v1/first/events")
+    const url = `/api/v1/first/events?timestamp=${Date.now()}`;
+    return fetch(url, {
+            method: "GET",
+            headers: {
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache"
+            }
+        })
         .then(response => {
             if (!response.ok) {
                 return response.json().then(errData => {
@@ -201,7 +208,14 @@ function fetchDataFirstRoom() {
 }
 
 function fetchDataThirdRoom() {
-    return fetch("/api/v1/third/events")
+    const url = `/api/v1/third/events?timestamp=${Date.now()}`;
+    return fetch(url, {
+            method: "GET",
+            headers: {
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache"
+            }
+        })
         .then(response => {
             if (!response.ok) {
                 return response.json().then(errData => {
