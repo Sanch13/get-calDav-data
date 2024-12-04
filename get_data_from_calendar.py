@@ -2,6 +2,7 @@ import os
 import json
 import locale
 
+from icalendar import Calendar
 import caldav
 from dotenv import load_dotenv
 
@@ -46,12 +47,12 @@ def get_now_and_midnight():
     return now, midnight
 
 
-def connect_to_calendar(url, username, password, ssl_verify_cert=True):
+def connect_to_calendar(url, username, password):
     """
     Подключается к календарю с использованием DAVClient и возвращает объект календаря.
     """
     try:
-        with caldav.DAVClient(url=url, username=username, password=password, ssl_verify_cert=True) as client:
+        with caldav.DAVClient(url=url, username=username, password=password) as client:
             my_calendar = client.calendar(url=url)
             return my_calendar
     except Exception as e:
@@ -84,31 +85,33 @@ with caldav.DAVClient(
 
 
 if __name__ == '__main__':
-    # now, midnight = get_now_and_midnight()
-    # midnight = (now + timedelta(days=1)).replace(hour=23, minute=59, second=59, microsecond=0)
-    # Установка временной зоны UTC+3
-    tz = timezone(timedelta(hours=3))
-
-    # Начало дня (полночь текущего дня)
-    start = datetime.now(tz).replace(hour=0, minute=0, second=0, microsecond=0)
-
-    # Конец дня (полночь следующего дня)
-    end = start + timedelta(days=1)
-
-    print(f"Start: {start}, End: {end}")
-
-
-    print()
+    # print(credentials)
     print(my_calendar)
-    # print(f"{now} - {midnight}")
-    print(f"{start} - {end}")
-    events_today = my_calendar.date_search(start=start, end=end)
-    print(f"events_today {len(events_today)} {events_today}")
+    # for event in my_calendar.events():
+    #     raw_data = event.data
+    #     print(type(raw_data))
+    #     print("----------")
+        # calendar = Calendar.from_ical(raw_data)
+        # for component in calendar.walk('VEVENT'):
+        #     print(component)
+
+    now, _ = get_now_and_midnight()
+    midnight = (now + timedelta(days=5)).replace(hour=23, minute=59, second=59, microsecond=0)
+
+    print(f"{now} ---- {midnight}")
+    # events_today = my_calendar.search(start=now, end=midnight)
+    events_today = my_calendar.date_search(start=now, end=midnight)
+    # print(f"events_today {len(events_today)} {events_today}")
     # for event in events_today:
-    #     print({event.get("start"), event.get("summary")})
+    #     raw_data = event.data
+    #     calendar = Calendar.from_ical(raw_data)
+    #     for component in calendar.walk('VEVENT'):
+    #         print("-------------")
+            # print("Название события:", component.get("SUMMARY").to_ical().decode("utf-8"))
+            # print("Начало:", component.get("DTSTART").dt)
+            # print("Конец:", component.get("DTEND").dt)
 
     sorted_events_today = get_sorted_events(events_today)
-
     print(f"sorted_events_today {len(sorted_events_today)}")
     for event in sorted_events_today:
         print(f'''{event.get("start").strftime('%Y-%m-%d %H:%M')}:{event.get("end").strftime('%Y-%m-%d %H:%M')} {event.get("summary")}''')
@@ -139,34 +142,3 @@ if __name__ == '__main__':
     #           datetime.fromisoformat(event["end"]).strftime("%H:%M"),
     #           event["status"],
     #           event["summary"])cal.
-
-
-
-'''
-Как избежать кеширования
-
-Если вы подозреваете, что сервер или клиент кеширует ответы, 
-есть несколько способов предотвратить кеширование:
-
-Использовать уникальные параметры в URL-запросах: Например, можно добавить временную метку к запросу:
-
-url_with_timestamp = f"{url}?timestamp={datetime.now().timestamp()}"
-
-Это заставит сервер считать запрос уникальным, избегая кеширования.
-
-Добавить заголовки для предотвращения кеширования: Если сервер или клиент поддерживает кеширование, 
-можно добавить заголовки для указания, чтобы кеширование не происходило:
-
-headers = {
-    'Cache-Control': 'no-cache, no-store, must-revalidate',
-    'Pragma': 'no-cache',
-    'Expires': '0'
-}
-
-# Пример использования с requests:
-response = requests.get(url, headers=headers)
-
-Настроить сервер для отключения кеширования: Если вы управляете сервером CalDAV, можно настроить 
-его так, чтобы он не кешировал запросы или обновлял данные в реальном времени. Это зависит от 
-конфигурации сервера CalDAV.
-'''

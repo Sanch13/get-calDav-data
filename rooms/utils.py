@@ -64,7 +64,7 @@ def get_attendees_full_names(component):
 
 def get_summary(component) -> str:
     """Возвращает наименование события"""
-    return component.get('SUMMARY') if 'SUMMARY' in component else ''
+    return component.get('SUMMARY').to_ical().decode("utf-8") if 'SUMMARY' in component else ''
 
 
 def get_location(component) -> str:
