@@ -115,15 +115,19 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        updateDataFirstRoom();
+        updateDataFirstRoom();  // Функция для обновления данных о занятости переговрной 1 этажа
 
-        // Функции для обновления курсов валют
-        fetchRatesToday();
+
+        fetchRatesToday();  // Функция для обновления курсов валют
         setInterval(fetchRatesToday, 1800000);
 
-        // Функции для обновления данных о погоде
-        fetchDataWeatherToday();
+
+        fetchDataWeatherToday();  // Функция для обновления данных о погоде
         setInterval(fetchDataWeatherToday, 1800000);
+
+        setTimeout(function() {
+            location.reload();  //  Перезагрузка в полночь
+        }, timeUntilMidnight());
 });
 </script>
 

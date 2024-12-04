@@ -181,7 +181,7 @@ function showRatesToday(data) {
 }
 
 function fetchDataFirstRoom() {
-    const url = `/api/v1/first/events?timestamp=${Date.now()}`;
+    const url = `/api/v1/first/events/?timestamp=${Date.now()}`;
     return fetch(url, {
             method: "GET",
             headers: {
@@ -198,7 +198,7 @@ function fetchDataFirstRoom() {
             return response.json();
         })
         .then(data => {
-            console.log(getLocalTime(), data);
+            // console.log(getLocalTime(), data);
             updateUI(data);
             return data;
         })
@@ -208,7 +208,7 @@ function fetchDataFirstRoom() {
 }
 
 function fetchDataThirdRoom() {
-    const url = `/api/v1/third/events?timestamp=${Date.now()}`;
+    const url = `/api/v1/third/events/?timestamp=${Date.now()}`;
     return fetch(url, {
             method: "GET",
             headers: {
@@ -225,7 +225,7 @@ function fetchDataThirdRoom() {
             return response.json();
         })
         .then(data => {
-            console.log(getLocalTime(), data);
+            // console.log(getLocalTime(), data);
             updateUI(data);
             return data;
         })
@@ -377,3 +377,11 @@ function showErrorMessage(error) {
 function cutText(txt) {
     return txt.slice(0, 90) + "...";
 }
+
+function timeUntilMidnight() {
+    const now = new Date();
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0); // Устанавливаем полночь на следующий день
+    return midnight - now; // Возвращаем разницу в миллисекундах
+}
+

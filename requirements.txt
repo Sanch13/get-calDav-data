@@ -6,6 +6,7 @@ Django==4.2.16
 djangorestframework==3.15.2
 icalendar==6.0.1
 idna==3.10
+loguru==0.7.2
 lxml==5.3.0
 pyCardDAV==0.7.0
 python-dateutil==2.9.0.post0

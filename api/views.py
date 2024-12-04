@@ -5,6 +5,7 @@ from rest_framework.views import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 
+from logs.logging_config import logger
 
 from rooms.utils import (
     get_caldav_config,
@@ -29,17 +30,21 @@ class GetCurrentFirstEventsAPIView(views.APIView):
                 username=settings.CALDAV_FIRST_FLOOR_USERNAME,
                 password=settings.CALDAV_FIRST_FLOOR_PASSWORD,
             )).date_search(start=now, end=midnight)
+        except Exception as e:
+            logger.error(f"Ошибка при получении данных с сервера: {e}", exc_info=True)
+            return Response(data={"error": f"{e}"},
+                            status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
+        try:
             sorted_events_today = get_sorted_events(events_today)
             sorted_all_events_today = get_sorted_all_events(sorted_events_today)
             data = get_all_events_today_in_json(sorted_all_events_today)
-            return Response(data={"data_json": data},
-                            status=status.HTTP_200_OK)
-
         except Exception as e:
-            print(f"Ошибка при получении данных с сервера: {e}")
-            return Response(data={"error": f"{e}"},
-                            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            logger.error(f"Ошибка при обработке событий: {e}", exc_info=True)
+            return Response(data={"error": f"{e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data={"data_json": data},
+                        status=status.HTTP_200_OK)
 
 
 class GetCurrentThirdEventsAPIView(views.APIView):
@@ -53,17 +58,19 @@ class GetCurrentThirdEventsAPIView(views.APIView):
                 username=settings.CALDAV_THIRD_FLOOR_USERNAME,
                 password=settings.CALDAV_THIRD_FLOOR_PASSWORD,
             )).date_search(start=now, end=midnight)
+        except Exception as e:
+            logger.error(f"Ошибка при получении данных с сервера: {e}", exc_info=True)
+            return Response(data={"error": f"{e}"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
+        try:
             sorted_events_today = get_sorted_events(events_today)
             sorted_all_events_today = get_sorted_all_events(sorted_events_today)
             data = get_all_events_today_in_json(sorted_all_events_today)
-            return Response(data={"data_json": data},
-                            status=status.HTTP_200_OK)
-
         except Exception as e:
-            print(f"Ошибка при получении данных с сервера: {e}")
-            return Response(data={"error": f"{e}"},
-                            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            logger.error(f"Ошибка при получении данных с сервера: {e}", exc_info=True)
+            return Response(data={"error": f"{e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data={"data_json": data}, status=status.HTTP_200_OK)
 
 
 class GetRatesMoneyView(views.APIView):
@@ -73,6 +80,7 @@ class GetRatesMoneyView(views.APIView):
         try:
             rates_today: dict = get_rates_today_by_api()
         except Exception as e:
+            logger.error(f"Ошибка при получении данных с сервера курсов валют: {e}", exc_info=True)
             return Response(data={"error": f"{e}"},
                             status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
@@ -90,6 +98,7 @@ class GetWeatherView(views.APIView):
                 location="Minsk"
             )
         except Exception as e:
+            logger.error(f"Ошибка при получении данных с сервера погоды: {e}", exc_info=True)
             return Response(data={"error": f"{e}"},
                             status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
