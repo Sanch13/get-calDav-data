@@ -1,6 +1,6 @@
 import hashlib
 import json
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, date
 
 import requests
 
@@ -19,19 +19,10 @@ def get_caldav_config(url, username, password) -> dict:
 
 def connect_to_calendar(url, username, password):
     """
-    Подключается к серверному календарю с использованием DAVClient и возвращает объект календаря.
+    Подключается к календарю с использованием DAVClient и возвращает объект календаря.
     """
-    headers = {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-    }
     try:
-        with caldav.DAVClient(url=url,
-                              username=username,
-                              password=password,
-                              headers=headers
-                              ) as client:
+        with caldav.DAVClient(url=url, username=username, password=password) as client:
             my_calendar = client.calendar(url=url)
             return my_calendar
     except Exception as e:
@@ -100,6 +91,8 @@ def get_sorted_events(events) -> list:
             raw_data = event.data
             calendar = Calendar.from_ical(raw_data)
             for component in calendar.walk('VEVENT'):
+                if filter_date_object(get_start_time(component)) and filter_date_object(get_end_time(component)):
+                    continue
                 item = {
                     "summary": get_summary(component) or "",
                     "start": get_start_time(component) or "",
@@ -122,40 +115,33 @@ def get_sorted_events(events) -> list:
         return []
 
 
-def get_now_and_midnight():
-    now = datetime.now()
-    midnight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    return now, midnight
-
-
 def get_sorted_all_events(events):
-    """Возвращает все отсортированные события текущего дня."""
+    """Возвращает все события текущего дня"""
 
     time_now = datetime.now(timezone(timedelta(hours=3)))
-    midnight = time_now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+    midnight = (time_now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
     all_events_cur_day = []
+
     for event in events:
         start_time = event.get("start", midnight)
-        end_time = event.get("end", midnight)
 
-        if start_time < midnight and end_time > time_now:
-            if time_now < start_time:
-                all_events_cur_day.append({
-                    "summary": "СВОБОДНО",
-                    "start": time_now.isoformat(),
-                    "end": start_time.isoformat(),
-                    "status": "free"
-                })
-
+        if time_now < start_time:
             all_events_cur_day.append({
-                "summary": event.get("summary"),
-                "start": start_time.isoformat(),
-                "end": end_time.isoformat(),
-                "status": event.get("status")
+                "summary": "СВОБОДНО",
+                "start": time_now.isoformat(),
+                "end": start_time.isoformat(),
+                "status": "free"
             })
 
-            time_now = max(time_now, end_time)
+        all_events_cur_day.append({
+            "summary": event.get("summary"),
+            "start": start_time.isoformat(),
+            "end": event.get("end").isoformat(),
+            "status": event.get("status")
+        })
+
+        time_now = event.get("end")
 
     if time_now < midnight:
         all_events_cur_day.append({
@@ -243,3 +229,10 @@ def get_weather_today_by_api(api_key_weather, location) -> dict:
             print(f"Ошибка: сервер вернул код {response.status_code}")
     except requests.RequestException as e:
         print(f"Не удалось получить данные. Ошибка: {e}")
+
+
+def filter_date_object(dt_object) -> bool:
+    """
+    If dt_object is date return True else False
+    """
+    return isinstance(dt_object, date) and not isinstance(dt_object, datetime)
