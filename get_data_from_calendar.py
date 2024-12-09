@@ -35,9 +35,9 @@ def get_caldav_config_miran_bel_com() -> dict:
     load_dotenv()  # Загрузка переменных из .env
 
     return {
-        "url": os.getenv("CALDAV_FIRST_FLOOR_URL"),
-        "username": os.getenv("CALDAV_FIRST_FLOOR_USERNAME"),
-        "password": os.getenv("CALDAV_FIRST_FLOOR_PASSWORD"),
+        "url": os.getenv("CALDAV_THIRD_FLOOR_URL"),
+        "username": os.getenv("CALDAV_THIRD_FLOOR_USERNAME"),
+        "password": os.getenv("CALDAV_THIRD_FLOOR_PASSWORD"),
     }
 
 
@@ -119,21 +119,17 @@ if __name__ == '__main__':
     sorted_all_events_today = get_sorted_all_events(sorted_events_today)
     print(f"sorted_all_events_today {len(sorted_all_events_today)} {sorted_all_events_today}")
     for event in sorted_all_events_today:
-        print(f'''{event.get("start")}:{event.get("end")} {event.get("summary")}''')
+        print(f'''{event.get("start")}----{event.get("end")}----{event.get("summary")}''')
 
     # now = datetime.today()
     # midhigth = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
     # print(now)
     # print(midhigth)
-
     # print(all_events_now)
-
     # sorted_events = get_sorted_all_events(all_events_now)
     # all_events_cur_day = get_all_events_in_json(sorted_events)
-
     # with open("example.json", "w", encoding="utf-8") as file:
     #     file.write(all_events_cur_day)
-
     # with open("example.json", "r", encoding="utf-8") as file:
     #     all_data = json.loads(file.read())
     #
