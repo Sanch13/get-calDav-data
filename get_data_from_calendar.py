@@ -35,9 +35,9 @@ def get_caldav_config_miran_bel_com() -> dict:
     load_dotenv()  # Загрузка переменных из .env
 
     return {
-        "url": os.getenv("CALDAV_THIRD_FLOOR_URL"),
-        "username": os.getenv("CALDAV_THIRD_FLOOR_USERNAME"),
-        "password": os.getenv("CALDAV_THIRD_FLOOR_PASSWORD"),
+        "url": os.getenv("CALDAV_FIRST_FLOOR_URL"),
+        "username": os.getenv("CALDAV_FIRST_FLOOR_USERNAME"),
+        "password": os.getenv("CALDAV_FIRST_FLOOR_PASSWORD"),
     }
 
 
@@ -96,7 +96,7 @@ if __name__ == '__main__':
         #     print(component)
 
     now, _ = get_now_and_midnight()
-    midnight = (now + timedelta(days=5)).replace(hour=23, minute=59, second=59, microsecond=0)
+    midnight = (now + timedelta(days=1)).replace(hour=23, minute=59, second=59, microsecond=0)
 
     print(f"{now} ---- {midnight}")
     # events_today = my_calendar.search(start=now, end=midnight)

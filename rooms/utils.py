@@ -91,7 +91,8 @@ def get_sorted_events(events) -> list:
             raw_data = event.data
             calendar = Calendar.from_ical(raw_data)
             for component in calendar.walk('VEVENT'):
-                if filter_date_object(get_start_time(component)) and filter_date_object(get_end_time(component)):
+                if filter_date_object(get_start_time(component)) and filter_date_object(
+                        get_end_time(component)):
                     continue
                 item = {
                     "summary": get_summary(component) or "",
@@ -236,3 +237,9 @@ def filter_date_object(dt_object) -> bool:
     If dt_object is date return True else False
     """
     return isinstance(dt_object, date) and not isinstance(dt_object, datetime)
+
+
+def get_now_and_midnight():
+    now = datetime.now()
+    midnight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    return now, midnight

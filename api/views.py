@@ -43,7 +43,7 @@ class GetCurrentFirstEventsAPIView(views.APIView):
             logger.error(f"Ошибка при обработке событий: {e}", exc_info=True)
             return Response(data={"error": f"{e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(data={"data_json": data},
+        return Response(data={"data_json": data, "main__title": "Переговорная 1 этаж"},
                         status=status.HTTP_200_OK)
 
 
@@ -70,7 +70,8 @@ class GetCurrentThirdEventsAPIView(views.APIView):
             logger.error(f"Ошибка при получении данных с сервера: {e}", exc_info=True)
             return Response(data={"error": f"{e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(data={"data_json": data}, status=status.HTTP_200_OK)
+        return Response(data={"data_json": data, "main__title": "Переговорная 3 этаж"},
+                        status=status.HTTP_200_OK)
 
 
 class GetRatesMoneyView(views.APIView):

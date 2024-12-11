@@ -252,7 +252,7 @@ function updateUI(data) {
     main_window.classList.remove("main-left-bg-free", "main-left-bg-reserved");
 
     main_window.classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
-    // main_title.textContent = "Переговорная 1 этаж";
+    main_title.textContent = data.main__title;
     main_status.textContent = `${currentEvent.summary.length >= 100 ? cutText(currentEvent.summary) : currentEvent.summary}`;
     main_status.classList.add(`${currentEvent.summary.length >= 35 ? 'main_two_line' : 'main_one_line'}`)
     main_time.textContent = `
