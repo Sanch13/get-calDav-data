@@ -42,8 +42,8 @@ def connect_to_calendar(url, username, password):
 def get_organizer_sent_by(component):
     """Получить организатора мероприятия"""
     if 'ORGANIZER' in component:
-        organizer = component.get('ORGANIZER').params.get('SENT-BY')  # Извлекаем параметр SENT-BY
-        return organizer.split(":")[-1]
+        organizer = component.get('ORGANIZER').params.get("CN")  # Извлекаем параметр SENT-BY
+        return organizer
 
 
 def get_attendees_full_names(component):
@@ -106,12 +106,12 @@ def get_sorted_events(events) -> list:
                     "summary": get_summary(component) or "",
                     "start": get_start_time(component) or "",
                     "end": get_end_time(component) or "",
-                    "status": "reserved"
+                    "status": "reserved",
+                    "organizer": get_organizer_sent_by(component) or "",  # Организатор
                     # "location": get_location(component) or "",
                     # "category": get_category(component) or "",
                     # "description": get_description(component) or "",  #
                     # "members": get_attendees_full_names(component) or "",  # Участники
-                    # "organizer": get_organizer_sent_by(component) or "",  # Организатор
                 }
 
                 all_events.append(item)
@@ -147,14 +147,16 @@ def get_sorted_all_events(events):
                     "summary": "СВОБОДНО",
                     "start": time_now.isoformat(),
                     "end": start_time.isoformat(),
-                    "status": "free"
+                    "status": "free",
+                    "organizer": "None"
                 })
 
             all_events_cur_day.append({
                 "summary": event.get("summary"),
                 "start": start_time.isoformat(),
                 "end": end_time.isoformat(),
-                "status": event.get("status")
+                "status": event.get("status"),
+                "organizer": event.get("organizer")
             })
 
             time_now = max(time_now, end_time)
@@ -164,7 +166,8 @@ def get_sorted_all_events(events):
             "summary": "СВОБОДНО",
             "start": time_now.isoformat(),
             "end": midnight.isoformat(),
-            "status": "free"
+            "status": "free",
+            "organizer": "None"
         })
 
     return all_events_cur_day

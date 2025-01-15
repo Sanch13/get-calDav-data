@@ -35,7 +35,7 @@ def get_caldav_config_miran_bel_com() -> dict:
     load_dotenv()  # Загрузка переменных из .env
 
     return {
-        "url": os.getenv("CALDAV_FIRST_FLOOR_URL"),
+        "url": os.getenv("CALDAV_FIRST_FLOOR_PUBLIC"),
         "username": os.getenv("CALDAV_FIRST_FLOOR_USERNAME"),
         "password": os.getenv("CALDAV_FIRST_FLOOR_PASSWORD"),
     }
@@ -47,7 +47,7 @@ def get_now_and_midnight():
     return now, midnight
 
 
-def connect_to_calendar(url, username, password):
+def connect_to_calendar(url, username=None, password=None):
     """
     Подключается к календарю с использованием DAVClient и возвращает объект календаря.
     """
@@ -65,10 +65,7 @@ credentials = get_caldav_config_miran_bel_com()  # mail.miran-bel.com
 
 date_now = datetime.now()
 
-with caldav.DAVClient(
-        url=credentials.get("url"),
-        username=credentials.get("username"),
-        password=credentials.get("password")) as client:
+with caldav.DAVClient(url=credentials.get("url")) as client:
 
     my_calendar = client.calendar(url=credentials.get("url"))
 
@@ -114,12 +111,12 @@ if __name__ == '__main__':
     sorted_events_today = get_sorted_events(events_today)
     print(f"sorted_events_today {len(sorted_events_today)}")
     for event in sorted_events_today:
-        print(f'''{event.get("start").strftime('%Y-%m-%d %H:%M')}:{event.get("end").strftime('%Y-%m-%d %H:%M')} {event.get("summary")}''')
+        print(f'''{event.get("start").strftime('%Y-%m-%d %H:%M')}:{event.get("end").strftime('%Y-%m-%d %H:%M')} {event.get("summary")} {event.get("organizer")}''')
 
     sorted_all_events_today = get_sorted_all_events(sorted_events_today)
     print(f"sorted_all_events_today {len(sorted_all_events_today)} {sorted_all_events_today}")
     for event in sorted_all_events_today:
-        print(f'''{event.get("start")}----{event.get("end")}----{event.get("summary")}''')
+        print(f'''{event.get("start")}----{event.get("end")}----{event.get("summary")}----{event.get("organizer")}''')
 
     # now = datetime.today()
     # midhigth = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)

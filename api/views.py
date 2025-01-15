@@ -26,9 +26,9 @@ class GetCurrentFirstEventsAPIView(views.APIView):
         try:
             now, midnight = get_now_and_midnight()
             events_today = connect_to_calendar(**get_caldav_config(
-                url=settings.CALDAV_FIRST_FLOOR_URL,
-                username=settings.CALDAV_FIRST_FLOOR_USERNAME,
-                password=settings.CALDAV_FIRST_FLOOR_PASSWORD,
+                url=settings.CALDAV_FIRST_FLOOR_PUBLIC,
+                username=None,
+                password=None,
             )).date_search(start=now, end=midnight)
         except Exception as e:
             logger.error(f"Ошибка при получении данных с сервера: {e}", exc_info=True)
@@ -54,9 +54,9 @@ class GetCurrentThirdEventsAPIView(views.APIView):
         try:
             now, midnight = get_now_and_midnight()
             events_today = connect_to_calendar(**get_caldav_config(
-                url=settings.CALDAV_THIRD_FLOOR_URL,
-                username=settings.CALDAV_THIRD_FLOOR_USERNAME,
-                password=settings.CALDAV_THIRD_FLOOR_PASSWORD,
+                url=settings.CALDAV_THIRD_FLOOR_PUBLIC,
+                username=None,
+                password=None,
             )).date_search(start=now, end=midnight)
         except Exception as e:
             logger.error(f"Ошибка при получении данных с сервера: {e}", exc_info=True)
