@@ -21,3 +21,9 @@ def third_room(request):
     logger.info(f"Перезагрука третьей комнаты {datetime.datetime.now().strftime('%d %B %Y %H:%M:%S')}")
     return render(request=request,
                   template_name="rooms/third.html")
+
+
+def class_room(request):
+    logger.info(f"Перезагрука Учебной комнаты {datetime.datetime.now().strftime('%d %B %Y %H:%M:%S')}")
+    return render(request=request,
+                  template_name="rooms/class_room.html")

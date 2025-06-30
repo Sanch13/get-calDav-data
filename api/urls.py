@@ -7,6 +7,7 @@ urlpatterns = [
     path("first/events/", views.GetCurrentFirstEventsAPIView.as_view()),
     path("second/events/", views.GetCurrentSecondEventsAPIView.as_view()),
     path("third/events/", views.GetCurrentThirdEventsAPIView.as_view()),
+    path("class-room/events/", views.GetCurrentClassRoomEventsAPIView.as_view()),
     path("rates/", views.GetRatesMoneyView.as_view()),
     path("weather/", views.GetWeatherView.as_view()),
 ]

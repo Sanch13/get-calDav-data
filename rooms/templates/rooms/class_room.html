@@ -1,0 +1,134 @@
+{% extends 'rooms/base.html' %}
+{% load static %}
+
+{% block title %}
+{% endblock title %}
+
+{% block css %}
+{% endblock css %}
+
+{% block content %}
+
+<div class="wrapper">
+    <header class="header">
+        <div class="header__block__menu">
+            <div class="header__logo__miran">
+                <img src="{% static 'img/logo.png' %}"
+                     class="logo__miran"
+                     width="144"
+                     height="100"
+                     alt="">
+            </div>
+            <div class="header__date">
+                <div class="header__current__workday">
+                    <span id="currentDay"></span>
+                </div>
+                <div class="header__currnet__date">
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+        <div class="header__block__time">
+            <div class="header__logo__time">
+                <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="70"
+                        height="70"
+                        fill="currentColor"
+                        class="bi bi-clock"
+                        viewBox="0 -1 16 18"
+                        color="white"
+                        stroke="white"
+                        stroke-width="0.5"
+                >
+                    <path
+                            d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"
+                    />
+                    <path
+                            d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"
+                    />
+                </svg>
+            </div>
+            <div class="header__current__time">
+                <span id="moscowTime"></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main">
+        <main class="main-left" id="main-left">
+            <div class="main__title" id="main__title">
+            </div>
+            <div class="main__time" id="main__time"></div>
+            <div class="main__status" id="main__status">
+                <div class="main__organizer" id="main__organizer"></div>
+                <div class="main__summary" id="main__summary"></div>
+            </div>
+            <div class="main__timer">
+                <div class="main__timer__text" id="main__timer__text"></div>
+                <div class="timer__off" id="timer__off"></div>
+            </div>
+        </main>
+        <aside class="main-right">
+            <div class="container-card" id="events-container">
+            </div>
+        </aside>
+    </div>
+
+    <footer class="footer">
+        <div class="footer__icons__items">
+            <div class="footer__icon">
+                <img src="{% static 'img/usd.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_usd"></div>
+            </div>
+            <div class="footer__icon">
+                <img src="{% static 'img/euro.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_euro"></div>
+            </div>
+            <div class="footer__icon">
+                <img src="{% static 'img/rub.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_rub"></div>
+            </div>
+            <div class="footer__icon">
+                <img src="{% static 'img/yuan.svg' %}"
+                     alt=""
+                     class="footer__img"
+                >
+                <div class="footer__rate" id="footer_yuan"></div>
+            </div>
+            <div class="footer__icon" id="footer_weather_block">
+
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script>
+    let timerInterval = null;
+    document.addEventListener("DOMContentLoaded", () => {
+        updateDataClassRoom()  // Функция для обновления данных о занятости учебного класса
+
+        fetchRatesToday();  // Функция для обновления курсов валют
+        setInterval(fetchRatesToday, 1800000);
+
+        fetchDataWeatherToday();  // Функция для обновления данных о погоде
+        setInterval(fetchDataWeatherToday, 1800000);
+
+        setTimeout(function() {
+            location.reload();  //  Перезагрузка в полночь
+        }, timeUntilMidnight());
+    });
+</script>
+
+{% endblock %}
+
+

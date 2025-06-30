@@ -13,7 +13,7 @@ def custom_404(request, exception=None):
 handler404 = custom_404
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     path('rooms/', include("rooms.urls", namespace="rooms")),
     path('api/v1/', include("api.urls", namespace="api")),
 ]

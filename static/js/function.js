@@ -191,12 +191,12 @@ function showRatesToday(data) {
 function fetchDataFirstRoom() {
     const url = `/api/v1/first/events/?timestamp=${Date.now()}`;
     return fetch(url, {
-            method: "GET",
-            headers: {
-                "Cache-Control": "no-cache",
-                "Pragma": "no-cache"
-            }
-        })
+        method: "GET",
+        headers: {
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+        }
+    })
         .then(response => {
             if (!response.ok) {
                 return response.json().then(errData => {
@@ -218,12 +218,12 @@ function fetchDataFirstRoom() {
 function fetchDataSecondRoom() {
     const url = `/api/v1/second/events/?timestamp=${Date.now()}`;
     return fetch(url, {
-            method: "GET",
-            headers: {
-                "Cache-Control": "no-cache",
-                "Pragma": "no-cache"
-            }
-        })
+        method: "GET",
+        headers: {
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+        }
+    })
         .then(response => {
             if (!response.ok) {
                 return response.json().then(errData => {
@@ -245,12 +245,38 @@ function fetchDataSecondRoom() {
 function fetchDataThirdRoom() {
     const url = `/api/v1/third/events/?timestamp=${Date.now()}`;
     return fetch(url, {
-            method: "GET",
-            headers: {
-                "Cache-Control": "no-cache",
-                "Pragma": "no-cache"
+        method: "GET",
+        headers: {
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw new Error(errData.error || "Ошибка сети");
+                });
             }
+            return response.json();
         })
+        .then(data => {
+            updateUI(data);
+            return data;
+        })
+        .catch(error => {
+            showErrorMessage(error.message);
+        });
+}
+
+function fetchDataClassRoom() {
+    const url = `/api/v1/class-room/events/?timestamp=${Date.now()}`;
+    return fetch(url, {
+        method: "GET",
+        headers: {
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+        }
+    })
         .then(response => {
             if (!response.ok) {
                 return response.json().then(errData => {
@@ -293,7 +319,7 @@ function updateUI(data) {
 
     if (currentEvent.organizer !== null) {
         main__organizer.textContent = "Организатор: " + currentEvent.organizer;
-        main__summary.textContent = `${currentEvent.summary.length >= 100 ? cutText(currentEvent.summary) :currentEvent.summary}`;
+        main__summary.textContent = `${currentEvent.summary.length >= 100 ? cutText(currentEvent.summary) : currentEvent.summary}`;
         main__summary.classList.add(`${currentEvent.summary.length >= 29 ? 'main_two_line' : 'main_one_line'}`);
     } else {
         main__organizer.textContent = '';
@@ -416,6 +442,18 @@ function getLocalTime() {
     const seconds = moscowTime.getSeconds().toString().padStart(2, "0");
 
     return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+}
+
+function updateDataClassRoom() {
+    let now = new Date();
+    let msUntilNextMinute = ((60 - now.getSeconds()) * 1000);
+
+    setTimeout(function () {
+        fetchDataClassRoom();
+        updateMoscowTime();
+        updateDateTime();
+        updateDataClassRoom();
+    }, msUntilNextMinute);
 }
 
 function updateDataThirdRoom() {
