@@ -63,6 +63,9 @@ function createFirstCardDiv(events) {
 
 function createOtherCardDiv(event) {
     const cardDiv = document.createElement('div');
+    if (cardDiv) {
+        console.log(`Есть cardDiv: ${cardDiv}`);
+    }
     cardDiv.classList.add('card');
 
     // Создаем HTML внутри карточки
@@ -108,13 +111,18 @@ function showDiffTime(endTimeEvent) {
     let diffMs = endTime - now;
 
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffMinutes = Math.ceil((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
 
     // Форматируем часы и минуты, добавляя нули перед одиночными числами
     const formattedHours = String(diffHours).padStart(2, '0');
     const formattedMinutes = String(diffMinutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, "0");
+    const timerOff = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 
-    return `${formattedHours}:${formattedMinutes}`;
+    // main_timer__off.textContent = timerOff;
+    // return `${formattedHours}:${formattedMinutes}`;
+    return timerOff
 }
 
 function fetchRatesToday() {
@@ -207,8 +215,8 @@ function fetchDataFirstRoom() {
         });
 }
 
-function fetchDataThirdRoom() {
-    const url = `/api/v1/third/events/?timestamp=${Date.now()}`;
+function fetchDataSecondRoom() {
+    const url = `/api/v1/second/events/?timestamp=${Date.now()}`;
     return fetch(url, {
             method: "GET",
             headers: {
@@ -234,6 +242,32 @@ function fetchDataThirdRoom() {
         });
 }
 
+function fetchDataThirdRoom() {
+    const url = `/api/v1/third/events/?timestamp=${Date.now()}`;
+    return fetch(url, {
+            method: "GET",
+            headers: {
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache"
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw new Error(errData.error || "Ошибка сети");
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            updateUI(data);
+            return data;
+        })
+        .catch(error => {
+            showErrorMessage(error.message);
+        });
+}
+
 function updateUI(data) {
     // Обновляем элементы страницы данными из data
     const events = JSON.parse(data.data_json);
@@ -241,20 +275,32 @@ function updateUI(data) {
     const mainEvents = equalsTime(events);
     const currentEvent = mainEvents[0];
 
-    const main_window = document.getElementById("main-left");
+    const main_window_left = document.getElementById("main-left");
     const main_title = document.getElementById("main__title");
-    const main_status = document.getElementById("main__status");
     const main_time = document.getElementById("main__time");
     const main_timer = document.getElementById("main__timer__text");
     const main_timer__off = document.getElementById("timer__off");
 
-    eventsContainer.textContent = "";
-    main_window.classList.remove("main-left-bg-free", "main-left-bg-reserved");
+    const main__organizer = document.getElementById("main__organizer");
+    const main__summary = document.getElementById("main__summary");
 
-    main_window.classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
+    eventsContainer.textContent = "";
+    main_window_left.classList.remove("main-left-bg-free", "main-left-bg-reserved");
     main_title.textContent = data.main__title;
-    main_status.textContent = `${currentEvent.summary.length >= 100 ? cutText(currentEvent.summary) : currentEvent.summary}`;
-    main_status.classList.add(`${currentEvent.summary.length >= 35 ? 'main_two_line' : 'main_one_line'}`)
+
+    main_window_left.classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
+    main__summary.classList.remove('main__summary_free', 'main_one_line', 'main_two_line');
+
+    if (currentEvent.organizer !== null) {
+        main__organizer.textContent = "Организатор: " + currentEvent.organizer;
+        main__summary.textContent = `${currentEvent.summary.length >= 100 ? cutText(currentEvent.summary) :currentEvent.summary}`;
+        main__summary.classList.add(`${currentEvent.summary.length >= 29 ? 'main_two_line' : 'main_one_line'}`);
+    } else {
+        main__organizer.textContent = '';
+        main__summary.textContent = currentEvent.summary;
+        main__summary.classList.add('main__summary_free');
+    }
+
     main_time.textContent = `
         ${new Date().toLocaleTimeString('ru-ru', {hour: '2-digit', minute: '2-digit'})} -
         ${new Date(currentEvent.end).toLocaleTimeString('ru-ru', {
@@ -262,10 +308,84 @@ function updateUI(data) {
             '2-digit'
     })}
     `;
-    main_timer.textContent = `
-         ${currentEvent.status === "reserved" ? 'Освободится через :' : ''}
-    `;
-    main_timer__off.textContent = currentEvent.status === "reserved" ? showDiffTime(currentEvent) : '';
+
+    // main_timer.textContent = `
+    //      ${currentEvent.status === "reserved" ? 'Освободится через :' : ''}
+    // `;
+
+    if (currentEvent.status === "reserved") {
+        // console.log("---", timerInterval, new Date().toLocaleTimeString());
+        if (timerInterval) {
+            // console.log("delete", timerInterval);
+            clearInterval(timerInterval);
+            // console.log("deleted", timerInterval || '');
+            timerInterval = null;
+            // console.log("сейчас", timerInterval);
+        }
+
+        timerInterval = setInterval(() => {
+            const timeLeft = showDiffTime(currentEvent);
+            main_timer.textContent = 'Освободится через :';
+            main_timer__off.textContent = timeLeft;
+            // Останавливаем таймер, если время истекло
+            if (timeLeft === '00:00:00') {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }, 1000);
+        // console.log("Инициализация", timerInterval, new Date().toLocaleTimeString());
+
+    } else {
+        main_timer.textContent = '';
+        main_timer__off.textContent = "";
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    // console.log("---", timerInterval, new Date().toLocaleTimeString());
+
+
+    // if (currentEvent.status === "reserved") {
+    //     // console.log(typeof currentEvent.start, currentEvent.start, typeof currentEvent.end, currentEvent.end);
+    //     // console.log(typeof previousStart, previousStart, typeof previousEnd, previousStart);
+    //     console.log("---previousStart---", previousStart, "---previousEnd---", previousEnd);
+    //     console.log("---TIME EQUALS---", previousStart === currentEvent.start, previousEnd === currentEvent.end);
+    //     if (currentEvent.start !== previousStart || currentEvent.end !== previousEnd) {
+    //         // Сохраняем новые значения времени
+    //         previousStart = currentEvent.start;
+    //         previousEnd = currentEvent.end;
+    //         // Очищаем старый интервал, если он существует
+    //         console.log("---timerInterval---",timerInterval);
+    //         if (timerInterval) {
+    //             console.log("---DELETE timerInterval---",timerInterval);
+    //             clearInterval(timerInterval);
+    //             console.log("---timerInterval---",timerInterval);
+    //             timerInterval = null;
+    //             console.log("---timerInterval---",timerInterval);
+    //         }
+    //     }
+    //
+    //
+    //     timerInterval = setInterval(() => {
+    //         const timeLeft = showDiffTime(currentEvent);
+    //         main_timer.textContent = 'Освободится через :';
+    //         main_timer__off.textContent = timeLeft;
+    //         // Останавливаем таймер, если время истекло
+    //         if (timeLeft === '00:00:00') {
+    //             clearInterval(timerInterval);
+    //             timerInterval = null;
+    //         }
+    //     }, 1000);
+    //
+    //
+    // } else {
+    //     main_timer.textContent = '';
+    //     main_timer__off.textContent = "";
+    // }
+
+    // main_timer__off.textContent = currentEvent.status === "reserved" ? timeLeft : '';
+    // main_timer__off.textContent = currentEvent.status === "reserved" ? showDiffTime(currentEvent) : '';
 
     if (mainEvents.length === 1) {
         eventsContainer.appendChild(createFirstCardDiv(mainEvents));
@@ -298,7 +418,6 @@ function getLocalTime() {
     return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
 }
 
-
 function updateDataThirdRoom() {
     let now = new Date();
     let msUntilNextMinute = ((60 - now.getSeconds()) * 1000);
@@ -308,6 +427,18 @@ function updateDataThirdRoom() {
         updateMoscowTime();
         updateDateTime();
         updateDataThirdRoom();
+    }, msUntilNextMinute);
+}
+
+function updateDataSecondRoom() {
+    let now = new Date();
+    let msUntilNextMinute = ((60 - now.getSeconds()) * 1000);
+
+    setTimeout(function () {
+        fetchDataSecondRoom();
+        updateMoscowTime();
+        updateDateTime();
+        updateDataSecondRoom();
     }, msUntilNextMinute);
 }
 
@@ -359,18 +490,24 @@ function showErrorMessage(error) {
     const eventsContainer = document.getElementById("events-container");
     eventsContainer.textContent = '';
 
-    const main_window = document.getElementById("main-left");
+    const main_window_left = document.getElementById("main-left");
     const main_title = document.getElementById("main__title");
-    const main_status = document.getElementById("main__status");
     const main_time = document.getElementById("main__time");
     const main_timer = document.getElementById("main__timer__text");
     const main_timer__off = document.getElementById("timer__off");
-    main_window.classList.remove("main-left-bg-free", "main-left-bg-reserved");
-    main_status.textContent = "";
+
+    const main__organizer = document.getElementById("main__organizer");
+    const main__summary = document.getElementById("main__summary");
+
+    main_window_left.classList.remove("main-left-bg-free", "main-left-bg-reserved");
     main_time.textContent = "";
     main_timer.textContent = "";
     main_timer__off.textContent = "";
-    console.log(error, error.message, error.error);
+
+    main__organizer.textContent = "";
+    main__summary.textContent = "";
+
+    console.log(error);
     main_title.textContent = `Не удалось загрузить данные:  ${error}`;
 }
 

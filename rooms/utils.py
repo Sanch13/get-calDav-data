@@ -148,7 +148,7 @@ def get_sorted_all_events(events):
                     "start": time_now.isoformat(),
                     "end": start_time.isoformat(),
                     "status": "free",
-                    "organizer": "None"
+                    "organizer": None
                 })
 
             all_events_cur_day.append({
@@ -167,7 +167,7 @@ def get_sorted_all_events(events):
             "start": time_now.isoformat(),
             "end": midnight.isoformat(),
             "status": "free",
-            "organizer": "None"
+            "organizer": None
         })
 
     return all_events_cur_day

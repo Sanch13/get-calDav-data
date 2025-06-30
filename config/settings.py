@@ -11,9 +11,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = os.getenv("DEBUG")
+DEBUG = True
+# DEBUG = os.getenv("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,7 +44,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -86,7 +87,10 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [Path(BASE_DIR, "static")]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = Path(BASE_DIR, "media")
@@ -110,6 +114,7 @@ CALDAV_USERNAME = os.getenv("CALDAV_USERNAME")
 CALDAV_PASSWORD = os.getenv("CALDAV_PASSWORD")
 
 CALDAV_FIRST_FLOOR_PUBLIC = os.getenv("CALDAV_FIRST_FLOOR_PUBLIC")
+CALDAV_SECOND_FLOOR_PUBLIC = os.getenv("CALDAV_SECOND_FLOOR_PUBLIC")
 CALDAV_THIRD_FLOOR_PUBLIC = os.getenv("CALDAV_THIRD_FLOOR_PUBLIC")
 
 CALDAV_FIRST_FLOOR_URL = os.getenv("CALDAV_FIRST_FLOOR_URL")
@@ -121,3 +126,5 @@ CALDAV_THIRD_FLOOR_USERNAME = os.getenv("CALDAV_THIRD_FLOOR_USERNAME")
 CALDAV_THIRD_FLOOR_PASSWORD = os.getenv("CALDAV_THIRD_FLOOR_PASSWORD")
 
 API_KEY_WEATHER = os.getenv("API_KEY_WEATHER")
+
+ROOM1 = os.getenv("ROOM1")

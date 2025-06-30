@@ -191,6 +191,25 @@ MAIN
     /*padding: 1rem 0; !* Дополнительное пространство вокруг текста *!*/
 }
 
+.main__organizer, .main__summary {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.main__organizer {
+    font-size: 2.5rem;
+}
+
+.main__summary_free {
+    margin: auto;
+    font-size: 5rem;
+}
+
 .main__title {
     font-size: 5rem;
 }
@@ -238,13 +257,14 @@ MAIN
 
 .main__status {
     display: flex;
-    flex-direction: row;
-    justify-content: start;
+    flex-direction: column;
+    justify-content: space-evenly;
     align-items: center;
 }
 
 .main_one_line {
-    font-size: 5rem;
+    font-size: 4rem;
+    margin-top: 0;
 }
 
 .main_two_line {
@@ -264,9 +284,14 @@ MAIN
     padding-right: 20px;
 }
 
-#timer__off {
+.timer__off {
+    width: 510px;
     font-size: 8rem;
+
 }
+
+/*#timer__off {*/
+/*}*/
 
 /* Правая часть основной части*/
 .main-right {
@@ -386,7 +411,7 @@ FOOTER
     display: flex;
     justify-content: start;
     align-items: center; /* Выровнять по верхнему краю футера */
-    gap: 60px;
+    gap: 110px;
     /*height: 80%; !* Занимает 80% от высоты футера *!*/
 }
 

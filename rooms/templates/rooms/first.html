@@ -62,10 +62,12 @@
             </div>
             <div class="main__time" id="main__time"></div>
             <div class="main__status" id="main__status">
+                <div class="main__summary" id="main__summary"></div>
+                <div class="main__organizer" id="main__organizer"></div>
             </div>
             <div class="main__timer">
                 <div class="main__timer__text" id="main__timer__text"></div>
-                <div id="timer__off"></div>
+                <div class="timer__off" id="timer__off"></div>
             </div>
         </main>
         <aside class="main-right">
@@ -113,6 +115,7 @@
 
 
 <script>
+    let timerInterval = null;
     document.addEventListener("DOMContentLoaded", () => {
         updateDataFirstRoom();  // Функция для обновления данных о занятости переговрной 1 этажа
 
