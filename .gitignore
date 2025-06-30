@@ -4,3 +4,4 @@ venv
 .idea
 *.sqlite3
 /logs/app.log
+staticfiles
