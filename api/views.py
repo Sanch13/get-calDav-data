@@ -125,7 +125,7 @@ class GetCurrentClassRoomEventsAPIView(views.APIView):
             logger.error(f"Ошибка при получении данных с сервера: {e}", exc_info=True)
             return Response(data={"error": f"{e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(data={"data_json": data, "main__title": "Учебный класс"},
+        return Response(data={"data_json": data, "main__title": "Учебный центр непрерывного совершенствования"},
                         status=status.HTTP_200_OK)
 
 
