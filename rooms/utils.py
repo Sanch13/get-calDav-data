@@ -240,14 +240,17 @@ def get_weather_today_by_api(api_key_weather, location) -> dict:
         "lang": "ru"
     }
     try:
+
         response = requests.get(url=URL_WEATHER, params=params)
         if response.status_code == 200:
             data = response.json()
             return data
         else:
             print(f"Ошибка: сервер вернул код {response.status_code}")
+            return {}
     except requests.RequestException as e:
         print(f"Не удалось получить данные. Ошибка: {e}")
+        return {}
 
 
 def filter_date_object(dt_object) -> bool:

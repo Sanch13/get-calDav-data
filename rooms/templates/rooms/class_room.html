@@ -113,9 +113,14 @@
 </div>
 
 <script>
+
+    fetchDataClassRoom();
+    updateDateTime();
+    updateMoscowTime();
+
     let timerInterval = null;
     document.addEventListener("DOMContentLoaded", () => {
-        updateDataClassRoom()  // Функция для обновления данных о занятости учебного класса
+        updateDataClassRoom();  // Функция для обновления данных о занятости учебного класса
 
         fetchRatesToday();  // Функция для обновления курсов валют
         setInterval(fetchRatesToday, 1800000);

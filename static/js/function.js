@@ -164,12 +164,15 @@ function fetchDataWeatherToday() {
 }
 
 function showDataWeatherToday(data) {
+    const dataTempC = data.tempC || "N/A";
     const createImgElement = `
         <img src="${data.icon}"
              alt=""
              class="footer__img"
+             onload="this.style.display='flex'"
+             onerror="this.style.display='none'"
         >
-        <div class="footer__weather" id="footer_weather">${data.tempC > 0 ? '+' + data.tempC : data.tempC}</div>
+        <div class="footer__weather" id="footer_weather">${dataTempC > 0 ? '+' + dataTempC : dataTempC}</div>
     `;
 
     const footer_weather_block = document.getElementById("footer_weather_block");
@@ -545,8 +548,9 @@ function showErrorMessage(error) {
     main__organizer.textContent = "";
     main__summary.textContent = "";
 
-    console.log(error);
-    main_title.textContent = `Не удалось загрузить данные:  ${error}`;
+    // console.log(error);
+    // main_title.textContent = `Не удалось загрузить данные:  ${error}`;
+    main_title.textContent = `${error}`;
 }
 
 function cutText(txt) {
