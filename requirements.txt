@@ -25,3 +25,4 @@ urwid==2.6.16
 vobject==0.9.8
 wcwidth==0.2.13
 x-wr-timezone==1.0.1
+b24pysdk==1.2.1

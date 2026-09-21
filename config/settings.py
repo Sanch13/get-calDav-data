@@ -129,3 +129,11 @@ CALDAV_THIRD_FLOOR_PASSWORD = os.getenv("CALDAV_THIRD_FLOOR_PASSWORD")
 API_KEY_WEATHER = os.getenv("API_KEY_WEATHER")
 
 ROOM1 = os.getenv("ROOM1")
+
+# TODO: Настроить переменные среды для комнат
+MEETING_ROOMS = {
+    "first": {"name": "Переговорная 1 этаж", "bitrix_resource_id": 54},
+    "cup": {"name": "Переговорная ЦУП", "bitrix_resource_id": 56},
+    "third": {"name": "Переговорная 3 этаж", "bitrix_resource_id": 55},
+    "classroom": {"name": "Учебный класс", "bitrix_resource_id": 97},
+}

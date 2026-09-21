@@ -564,3 +564,56 @@ function timeUntilMidnight() {
     return midnight - now; // Возвращаем разницу в миллисекундах
 }
 
+// new 21-09-2029
+function fetchRoomEvents(eventsUrl) {
+    const url = `${eventsUrl}${eventsUrl.includes('?') ? '&' : '?'}timestamp=${Date.now()}`;
+    return fetch(url, {
+        method: "GET",
+        headers: { "Cache-Control": "no-cache", "Pragma": "no-cache" }
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw new Error(errData.error || "Ошибка сети");
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            updateUI(data);
+            return data;
+        })
+        .catch(error => showErrorMessage(error.message));
+}
+
+function scheduleRoomUpdate(eventsUrl) {
+    const now = new Date();
+    const msUntilNextMinute = (60 - now.getSeconds()) * 1000;
+
+    setTimeout(function () {
+        fetchRoomEvents(eventsUrl);
+        updateMoscowTime();
+        updateDateTime();
+        scheduleRoomUpdate(eventsUrl);  // рекурсивный setTimeout вместо setInterval — как у тебя и было
+    }, msUntilNextMinute);
+}
+
+function initRoomPage(eventsUrl) {
+    fetchRoomEvents(eventsUrl);
+    updateDateTime();
+    updateMoscowTime();
+
+    document.addEventListener("DOMContentLoaded", () => {
+        scheduleRoomUpdate(eventsUrl);
+
+        fetchRatesToday();
+        setInterval(fetchRatesToday, 1800000);
+
+        fetchDataWeatherToday();
+        setInterval(fetchDataWeatherToday, 1800000);
+
+        setTimeout(function () {
+            location.reload();  // перезагрузка в полночь
+        }, timeUntilMidnight());
+    });
+}

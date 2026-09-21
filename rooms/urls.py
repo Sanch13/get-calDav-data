@@ -4,6 +4,7 @@ from rooms import views
 app_name = "rooms"
 
 urlpatterns = [
+    path("bitrix/<str:room_slug>/", views.room_view, name="room-view"),
     path("first/", views.first_room),
     path("second/", views.second_room),
     path("third/", views.third_room),

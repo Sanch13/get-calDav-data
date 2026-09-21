@@ -32,5 +32,5 @@ if __name__ == '__main__':
     Minsk: str = "Minsk"
     data = get_weather_by_api(api_key_weather=os.getenv("API_KEY_WEATHER"), location=Minsk)
 
-    with open("weather_today.json", "w", encoding="utf-8") as file:
+    with open("docs/weather_today.json", "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=True, indent=4)

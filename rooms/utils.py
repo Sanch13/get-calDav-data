@@ -7,6 +7,9 @@ import requests
 import caldav
 from icalendar import Calendar
 
+BITRIX_TZ = timezone(timedelta(hours=3))
+BITRIX_DATE_FORMAT = "%d.%m.%Y %H:%M:%S"
+
 
 def get_caldav_config(url, username, password) -> dict:
     """Возвращает словарь с данными для подключения к серверу по протоколу CalDAV."""
@@ -156,6 +159,53 @@ def get_sorted_all_events(events):
                 "start": start_time.isoformat(),
                 "end": end_time.isoformat(),
                 "status": event.get("status"),
+                "organizer": event.get("organizer")
+            })
+
+            time_now = max(time_now, end_time)
+
+    if time_now < midnight:
+        all_events_cur_day.append({
+            "summary": "СВОБОДНО",
+            "start": time_now.isoformat(),
+            "end": midnight.isoformat(),
+            "status": "free",
+            "organizer": None
+        })
+
+    return all_events_cur_day
+
+
+def parse_bitrix_datetime(value: str) -> datetime:
+    return datetime.strptime(value, BITRIX_DATE_FORMAT).replace(tzinfo=BITRIX_TZ)
+
+
+def get_sorted_all_events_from_bitrix(events):
+    """Возвращает все отсортированные события текущего дня."""
+
+    time_now = datetime.now(BITRIX_TZ)
+    midnight = time_now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+
+    all_events_cur_day = []
+    for event in events:
+        start_time = parse_bitrix_datetime(event["start"])
+        end_time = parse_bitrix_datetime(event["end"])
+
+        if start_time < midnight and end_time > time_now:
+            if time_now < start_time:
+                all_events_cur_day.append({
+                    "summary": "СВОБОДНО",
+                    "start": time_now.isoformat(),
+                    "end": start_time.isoformat(),
+                    "status": "free",
+                    "organizer": None
+                })
+
+            all_events_cur_day.append({
+                "summary": event.get("summary"),
+                "start": start_time.isoformat(),
+                "end": end_time.isoformat(),
+                "status": event.get("status", "reserved"),
                 "organizer": event.get("organizer")
             })
 

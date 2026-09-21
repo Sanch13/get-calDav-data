@@ -1,7 +1,10 @@
+import datetime
+
 import requests.exceptions
 import urllib3.exceptions
 
 from django.conf import settings
+from django.http import Http404, JsonResponse
 
 from rest_framework import views
 from rest_framework.views import Response
@@ -9,6 +12,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 
 from logs.logging_config import logger
+from rooms.services.get_data_from_bitrix import get_bitrix_client, get_raw_events, get_room_events_json
 
 from rooms.utils import (
     get_caldav_config,
@@ -18,8 +22,33 @@ from rooms.utils import (
     get_all_events_today_in_json,
     get_rates_today_by_api,
     get_weather_today_by_api,
-    get_now_and_midnight
+    get_now_and_midnight, get_sorted_all_events_from_bitrix
 )
+
+
+def api_room_events(request, room_slug: str):
+    room = settings.MEETING_ROOMS.get(room_slug)
+    if room is None:
+        raise Http404("Комната не найдена")
+
+    client = get_bitrix_client()
+    now = datetime.datetime.now().strftime("%Y-%m-%d")
+
+    try:
+        raw_events = get_raw_events(client, room["bitrix_resource_id"], now, now)
+        events_room = get_room_events_json(client, raw_events)
+        sorted_all_events_today = get_sorted_all_events_from_bitrix(events_room)
+        data = get_all_events_today_in_json(sorted_all_events_today)
+    except Exception:
+        logger.exception("Bitrix request failed for room %s", room_slug)
+        return JsonResponse({"error": "Не удалось получить данные из Bitrix"}, status=502)
+
+    return JsonResponse(
+        {"data_json": data},
+        {"main__title": "Переговорная 1 этаж"},
+        status=status.HTTP_200_OK
+    )
+
 
 
 class GetCurrentFirstEventsAPIView(views.APIView):
@@ -88,8 +117,9 @@ class GetCurrentFirstEventsAPIView(views.APIView):
 
         try:
             sorted_events_today = get_sorted_events(events_today)
-            print(f"sorted_events_today {sorted_events_today}")
+            # print(f"sorted_events_today {sorted_events_today}")
             sorted_all_events_today = get_sorted_all_events(sorted_events_today)
+            print(f"sorted_all_events_today ---- {sorted_all_events_today}")
             data = get_all_events_today_in_json(sorted_all_events_today)
         except Exception as e:
             logger.error(f"Ошибка обработки данных.", exc_info=True)
