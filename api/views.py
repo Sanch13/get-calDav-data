@@ -5,6 +5,8 @@ import urllib3.exceptions
 
 from django.conf import settings
 from django.http import Http404, JsonResponse
+from django.core.cache import cache
+from django.utils import timezone
 
 from rest_framework import views
 from rest_framework.views import Response
@@ -12,7 +14,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 
 from logs.logging_config import logger
-from rooms.services.get_data_from_bitrix import get_bitrix_client, get_raw_events, get_room_events_json
+from rooms.services.get_data_from_bitrix import (
+    get_bitrix_client,
+    get_raw_events,
+    get_room_events_json,
+    report_bitrix_failure,
+    report_bitrix_recovery
+)
 
 from rooms.utils import (
     get_caldav_config,
@@ -25,6 +33,8 @@ from rooms.utils import (
     get_now_and_midnight, get_sorted_all_events_from_bitrix
 )
 
+# STALE_THRESHOLD_SECONDS = 15 * 60  # после этого — показываем явную ошибку, а не старые данные
+STALE_THRESHOLD_SECONDS = 5 * 60
 
 def api_room_events(request, room_slug: str):
     room = settings.MEETING_ROOMS.get(room_slug)
@@ -33,21 +43,38 @@ def api_room_events(request, room_slug: str):
 
     client = get_bitrix_client()
     now = datetime.datetime.now().strftime("%Y-%m-%d")
+    cache_key = f"room_last_good:{room_slug}"
 
     try:
         raw_events = get_raw_events(client, room["bitrix_resource_id"], now, now)
         events_room = get_room_events_json(client, raw_events)
         sorted_all_events_today = get_sorted_all_events_from_bitrix(events_room)
         data = get_all_events_today_in_json(sorted_all_events_today)
+
+        cache.set(cache_key, {"data_json": data, "fetched_at": timezone.now().isoformat()}, timeout=None)
+        try:
+            report_bitrix_recovery()
+        except Exception:
+            logger.exception("Не удалось обработать recovery-уведомление Bitrix")
+
     except Exception:
         logger.exception("Bitrix request failed for room %s", room_slug)
-        return JsonResponse({"error": "Не удалось получить данные из Bitrix"}, status=502)
 
-    return JsonResponse(
-        {"data_json": data},
-        {"main__title": "Переговорная 1 этаж"},
-        status=status.HTTP_200_OK
-    )
+        try:
+            report_bitrix_failure(room_slug)
+        except Exception:
+            logger.exception("Не удалось обработать алерт о падении Bitrix")
+
+        cached = cache.get(cache_key)
+        if cached:
+            fetched_at = datetime.datetime.fromisoformat(cached["fetched_at"])
+            age_seconds = (timezone.now() - fetched_at).total_seconds()
+            if age_seconds <= STALE_THRESHOLD_SECONDS:
+                return JsonResponse({"data_json": cached["data_json"], "main__title": room["name"]}, status=200)
+
+        return JsonResponse({"error": "Ошибка обработки данных."}, status=500)
+
+    return JsonResponse({"data_json": data, "main__title": room["name"]}, status=200)
 
 
 

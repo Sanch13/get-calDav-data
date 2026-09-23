@@ -17,7 +17,7 @@ def room_view(request, room_slug: str):
 
     return render(request, "rooms/room.html", {
         "room": room,
-        "api_events_url": reverse("api-room-events", kwargs={"room_slug": room_slug}),
+        "api_events_url": reverse("api:api-room-events", kwargs={"room_slug": room_slug}),
     })
 
 

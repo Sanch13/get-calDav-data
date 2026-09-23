@@ -224,7 +224,7 @@ def get_sorted_all_events_from_bitrix(events):
 
 
 def get_all_events_today_in_json(events):
-    return json.dumps(events, sort_keys=True)
+    return json.dumps(events, sort_keys=True, ensure_ascii=False)
 
 
 def generate_hash(data: list) -> str:

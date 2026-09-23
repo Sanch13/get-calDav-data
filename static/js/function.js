@@ -1,5 +1,7 @@
 "use strict";
 
+let timerInterval = null;
+
 function updateMoscowTime() {
     // Создаем объект даты и времени для текущего момента
     const date = new Date();

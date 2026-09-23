@@ -1,30 +1,83 @@
 import datetime
+import logging
+from functools import lru_cache
 
 import requests
-
-from b24pysdk.errors import BitrixAPIError, BitrixSDKException
 from b24pysdk import Client, BitrixWebhook
-from b24pysdk import Config
-from b24pysdk.log import StreamLogger
 
-from rooms.utils import get_sorted_all_events_from_bitrix, get_all_events_today_in_json
+from django.conf import settings
+from django.core.cache import cache
+from django.utils import timezone
 
-Config().configure(logger=StreamLogger())
+logger = logging.getLogger(__name__)
 
-BITRIX_DOMAIN = "bitrix.miran-bel.com"
-BITRIX_WEBHOOK_USER_ID = 226
-BITRIX_WEBHOOK_KEY = "yyejq8bt6p3hn4aq"
-BITRIX_WEBHOOK_TOKEN = f"{BITRIX_WEBHOOK_USER_ID}/{BITRIX_WEBHOOK_KEY}"
-BITRIX_FIRST_SECTION_ID = 54
-BITRIX_CUP_SECTION_ID = 56
-BITRIX_THIRD_SECTION_ID = 55
-BITRIX_CLASSROOM_SECTION_ID = 97
+DOWN_SINCE_KEY = "bitrix:down_since"
+ALERT_COUNT_KEY = "bitrix:alert_count"
+LAST_ALERT_KEY = "bitrix:last_alert_at"
 
 
+def send_telegram_message(text: str) -> None:
+    url = f"https://api.telegram.org/bot{settings.TG_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": settings.TG_CHAT_ID,
+        "message_thread_id": settings.TG_TOPIC_ID,
+        "text": text,
+        "parse_mode": "HTML",
+        "disable_web_page_preview": True,
+    }
+
+    try:
+        response = requests.post(url, json=payload, timeout=5)
+        response.raise_for_status()
+        logger.info("Уведомление в Telegram успешно отправлено!")
+    except Exception:
+        logger.exception("Не удалось отправить уведомление в Telegram")
+
+
+def report_bitrix_failure(room_slug: str) -> None:
+    now = timezone.now()
+
+    # ставится только если ключа ещё нет — защита от гонки между 4 комнатами
+    cache.add(DOWN_SINCE_KEY, now.isoformat(), timeout=None)
+    down_since = datetime.datetime.fromisoformat(cache.get(DOWN_SINCE_KEY))
+    age_seconds = (now - down_since).total_seconds()
+
+    if age_seconds < settings.ALERT_THRESHOLD_SECONDS:
+        return  # ещё не 15 минут — молчим
+
+    alert_count = cache.get(ALERT_COUNT_KEY, 0)
+    if alert_count >= settings.MAX_ALERTS:
+        return  # уже отправили 3 раза — больше не спамим
+
+    last_alert_at = cache.get(LAST_ALERT_KEY)
+    if last_alert_at:
+        seconds_since_last = (now - datetime.datetime.fromisoformat(last_alert_at)).total_seconds()
+        if seconds_since_last < settings.ALERT_INTERVAL_SECONDS:
+            return  # прошлое уведомление было недавно
+
+    send_telegram_message(
+        f"Bitrix API недоступен уже {int(age_seconds // 60)} мин.\n"
+        f"Последняя ошибка зафиксирована на комнате: {room_slug}\n"
+        f"Уведомление {alert_count + 1}/{settings.MAX_ALERTS}"
+    )
+    cache.set(ALERT_COUNT_KEY, alert_count + 1, timeout=None)
+    cache.set(LAST_ALERT_KEY, now.isoformat(), timeout=None)
+
+
+def report_bitrix_recovery() -> None:
+    was_down = cache.get(DOWN_SINCE_KEY) is not None
+    cache.delete(DOWN_SINCE_KEY)
+    cache.delete(ALERT_COUNT_KEY)
+    cache.delete(LAST_ALERT_KEY)
+    if was_down:
+        send_telegram_message("Bitrix API снова отвечает.")
+
+
+@lru_cache(maxsize=1)
 def get_bitrix_client() -> Client:
     token = BitrixWebhook(
-        domain=BITRIX_DOMAIN,
-        webhook_token=BITRIX_WEBHOOK_TOKEN,
+        domain=settings.BITRIX_DOMAIN,
+        webhook_token=settings.BITRIX_WEBHOOK_TOKEN,
     )
     return Client(token)
 
@@ -64,31 +117,21 @@ def get_room_events_json(client, raw_events) -> list[dict]:
         })
     return result
 
-
-def main(client, payload):
-    try:
-        request = client.calendar.event.get(**payload)
-        result = request.result
-        print(result)
-    except BitrixAPIError as error:
-        print(
-            "Ошибка Bitrix API",
-            f"error: {error.error}",
-            f"error_description: {error.error_description}",
-            sep="\n",
-        )
-    except BitrixSDKException as error:
-        print(f"Ошибка Bitrix SDK: {error.message}")
-    except Exception as error:
-        print(f"Непредвиденная ошибка: {error}")
+# if __name__ == '__main__':
+#     import os
+#     import django
+#
+#     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+#     django.setup()
+#     send_telegram_message("TEST-2")
 
 
-if __name__ == '__main__':
-    now = datetime.datetime.now().strftime("%Y-%m-%d")
-    section_id = BITRIX_FIRST_SECTION_ID
-
-    client = get_bitrix_client()
-    raw_events = get_raw_events(client, section_id, now, now)
-    events_room = get_room_events_json(raw_events)
-    sorted_all_events_today = get_sorted_all_events_from_bitrix(events_room)
-    data = get_all_events_today_in_json(sorted_all_events_today)
+# now = datetime.datetime.now().strftime("%Y-%m-%d")
+# section_id = settings.MEETING_ROOMS["first"]["bitrix_resource_id"]
+# print(section_id)
+# client = get_bitrix_client()
+# raw_events = get_raw_events(client, section_id, now, now)
+# events_room = get_room_events_json(client, raw_events)
+# sorted_all_events_today = get_sorted_all_events_from_bitrix(events_room)
+# print(sorted_all_events_today)
+# data = get_all_events_today_in_json(sorted_all_events_today)

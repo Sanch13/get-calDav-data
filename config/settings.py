@@ -108,6 +108,13 @@ REST_FRAMEWORK = {
     ),
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "/home/sanch/django_rooms",
+    }
+}
+
 # ENV
 CALDAV_URL = os.getenv("CALDAV_URL")
 CALDAV_USERNAME = os.getenv("CALDAV_USERNAME")
@@ -130,10 +137,18 @@ API_KEY_WEATHER = os.getenv("API_KEY_WEATHER")
 
 ROOM1 = os.getenv("ROOM1")
 
-# TODO: Настроить переменные среды для комнат
+TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
+TG_CHAT_ID = os.getenv("TG_CHAT_ID")
+TG_TOPIC_ID = int(os.getenv("TG_TOPIC_ID") or 0)
+
 MEETING_ROOMS = {
-    "first": {"name": "Переговорная 1 этаж", "bitrix_resource_id": 54},
-    "cup": {"name": "Переговорная ЦУП", "bitrix_resource_id": 56},
-    "third": {"name": "Переговорная 3 этаж", "bitrix_resource_id": 55},
-    "classroom": {"name": "Учебный класс", "bitrix_resource_id": 97},
+    "first": {"name": "Переговорная 1 этаж", "bitrix_resource_id": int(os.getenv("BITRIX_FIRST_SECTION_ID") or 0)},
+    "cup": {"name": "Переговорная ЦУП", "bitrix_resource_id": int(os.getenv("BITRIX_CUP_SECTION_ID") or 0)},
+    "third": {"name": "Переговорная 3 этаж", "bitrix_resource_id": int(os.getenv("BITRIX_THIRD_SECTION_ID") or 0)},
+    "classroom": {"name": "Учебный класс", "bitrix_resource_id": int(os.getenv("BITRIX_CLASSROOM_SECTION_ID") or 0)},
 }
+BITRIX_DOMAIN = os.getenv("BITRIX_DOMAIN")
+BITRIX_WEBHOOK_TOKEN = f"{os.getenv('BITRIX_WEBHOOK_USER_ID') or ''}/{os.getenv('BITRIX_WEBHOOK_KEY') or ''}"
+ALERT_THRESHOLD_SECONDS = int(os.getenv("BITRIX_ALERT_THRESHOLD_SECONDS") or 15 * 60)
+ALERT_INTERVAL_SECONDS = int(os.getenv("BITRIX_ALERT_INTERVAL_SECONDS") or 15 * 60)
+MAX_ALERTS = int(os.getenv("BITRIX_ALERT_MAX_COUNT") or 3)
