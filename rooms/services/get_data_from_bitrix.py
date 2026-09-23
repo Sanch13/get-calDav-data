@@ -9,6 +9,8 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
 
+from rooms.utils import parse_bitrix_datetime, BITRIX_DATE_FORMAT
+
 logger = logging.getLogger(__name__)
 
 DOWN_SINCE_KEY = "bitrix:down_since"
@@ -109,11 +111,23 @@ def get_room_events_json(client, raw_events) -> list[dict]:
     result = []
     for ev in raw_events:
         parent = parents_by_id.get(ev.get("PARENT_ID"), {})
+
+        start_raw = ev.get("DATE_FROM", "")
+        end_raw = ev.get("DATE_TO", "")
+
+        # Событие "весь день": Bitrix отдаёт DATE_FROM == DATE_TO,
+        # реальная длительность — в DT_LENGTH (секунды).
+        if ev.get("DT_SKIP_TIME") == "Y" and start_raw:
+            start_dt = parse_bitrix_datetime(start_raw)
+            length = ev.get("DT_LENGTH") or 86400
+            end_dt = start_dt + datetime.timedelta(seconds=length)
+            end_raw = end_dt.strftime(BITRIX_DATE_FORMAT)
+
         result.append({
             "organizer": ev.get("NAME", ""),
             "summary": parent.get("NAME") or ev.get("NAME", ""),
-            "start": ev.get("DATE_FROM", ""),
-            "end": ev.get("DATE_TO", ""),
+            "start": start_raw,
+            "end": end_raw,
         })
     return result
 

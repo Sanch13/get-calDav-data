@@ -33,7 +33,6 @@ from rooms.utils import (
     get_now_and_midnight, get_sorted_all_events_from_bitrix
 )
 
-# STALE_THRESHOLD_SECONDS = 15 * 60  # после этого — показываем явную ошибку, а не старые данные
 STALE_THRESHOLD_SECONDS = 5 * 60
 
 def api_room_events(request, room_slug: str):
