@@ -145,7 +145,7 @@ MEETING_ROOMS = {
     "first": {"name": "Переговорная 1 этаж", "bitrix_resource_id": int(os.getenv("BITRIX_FIRST_SECTION_ID") or 0)},
     "cup": {"name": "Переговорная ЦУП", "bitrix_resource_id": int(os.getenv("BITRIX_CUP_SECTION_ID") or 0)},
     "third": {"name": "Переговорная 3 этаж", "bitrix_resource_id": int(os.getenv("BITRIX_THIRD_SECTION_ID") or 0)},
-    "classroom": {"name": "Учебный класс", "bitrix_resource_id": int(os.getenv("BITRIX_CLASSROOM_SECTION_ID") or 0)},
+    "classroom": {"name": "Учебный центр непрерывного совершенствования", "bitrix_resource_id": int(os.getenv("BITRIX_CLASSROOM_SECTION_ID") or 0)},
 }
 BITRIX_DOMAIN = os.getenv("BITRIX_DOMAIN")
 BITRIX_WEBHOOK_TOKEN = f"{os.getenv('BITRIX_WEBHOOK_USER_ID') or ''}/{os.getenv('BITRIX_WEBHOOK_KEY') or ''}"

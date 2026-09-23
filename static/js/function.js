@@ -2,6 +2,32 @@
 
 let timerInterval = null;
 
+
+function fitTextToOneLine(el, {minPx = 22, maxPx = 80} = {}) {
+    if (!el || !el.textContent.trim()) return;
+
+    el.style.whiteSpace = 'nowrap';
+
+    let lo = minPx;
+    let hi = maxPx;
+    let best = minPx;
+
+    // Бинарный поиск наибольшего размера, при котором текст влезает в одну строку
+    while (lo <= hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        el.style.fontSize = mid + 'px';
+
+        if (el.scrollWidth <= el.clientWidth) {
+            best = mid;
+            lo = mid + 1;
+        } else {
+            hi = mid - 1;
+        }
+    }
+
+    el.style.fontSize = best + 'px';
+}
+
 function updateMoscowTime() {
     // Создаем объект даты и времени для текущего момента
     const date = new Date();
@@ -318,6 +344,7 @@ function updateUI(data) {
     eventsContainer.textContent = "";
     main_window_left.classList.remove("main-left-bg-free", "main-left-bg-reserved");
     main_title.textContent = data.main__title;
+    fitTextToOneLine(main_title, { minPx: 22, maxPx: 80 });
 
     main_window_left.classList.add(`${currentEvent.status === 'free' ? 'main-left-bg-free' : 'main-left-bg-reserved'}`);
     main__summary.classList.remove('main__summary_free', 'main_one_line', 'main_two_line');
@@ -553,6 +580,7 @@ function showErrorMessage(error) {
     // console.log(error);
     // main_title.textContent = `Не удалось загрузить данные:  ${error}`;
     main_title.textContent = `${error}`;
+    fitTextToOneLine(main_title, { minPx: 22, maxPx: 80 });
 }
 
 function cutText(txt) {
@@ -571,7 +599,7 @@ function fetchRoomEvents(eventsUrl) {
     const url = `${eventsUrl}${eventsUrl.includes('?') ? '&' : '?'}timestamp=${Date.now()}`;
     return fetch(url, {
         method: "GET",
-        headers: { "Cache-Control": "no-cache", "Pragma": "no-cache" }
+        headers: {"Cache-Control": "no-cache", "Pragma": "no-cache"}
     })
         .then(response => {
             if (!response.ok) {

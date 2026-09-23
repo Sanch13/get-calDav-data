@@ -211,7 +211,10 @@ MAIN
 }
 
 .main__title {
-    font-size: 5rem;
+    white-space: nowrap;   /* запрет переноса */
+    overflow: hidden;      /* на всякий случай, если совсем не влезет */
+    font-size: 5rem;       /* стартовый/максимальный размер, JS будет от него отталкиваться */
+
 }
 
 .main__time {
