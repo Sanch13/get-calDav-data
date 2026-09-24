@@ -4,7 +4,7 @@ from api import views
 app_name = "api"
 
 urlpatterns = [
-    path("<str:room_slug>/events/", views.api_room_events, name="api-room-events"),
+    path("bitrix/<str:room_slug>/events/", views.api_room_events, name="api-room-events"),
     path("first/events/", views.GetCurrentFirstEventsAPIView.as_view()),
     path("second/events/", views.GetCurrentSecondEventsAPIView.as_view()),
     path("third/events/", views.GetCurrentThirdEventsAPIView.as_view()),

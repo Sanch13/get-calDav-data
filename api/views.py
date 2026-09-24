@@ -143,9 +143,7 @@ class GetCurrentFirstEventsAPIView(views.APIView):
 
         try:
             sorted_events_today = get_sorted_events(events_today)
-            # print(f"sorted_events_today {sorted_events_today}")
             sorted_all_events_today = get_sorted_all_events(sorted_events_today)
-            print(f"sorted_all_events_today ---- {sorted_all_events_today}")
             data = get_all_events_today_in_json(sorted_all_events_today)
         except Exception as e:
             logger.error(f"Ошибка обработки данных.", exc_info=True)

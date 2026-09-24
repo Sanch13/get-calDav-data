@@ -92,7 +92,7 @@ function createFirstCardDiv(events) {
 function createOtherCardDiv(event) {
     const cardDiv = document.createElement('div');
     if (cardDiv) {
-        console.log(`Есть cardDiv: ${cardDiv}`);
+        // console.log(`Есть cardDiv: ${cardDiv}`);
     }
     cardDiv.classList.add('card');
 
