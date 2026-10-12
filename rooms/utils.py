@@ -182,45 +182,50 @@ def parse_bitrix_datetime(value: str) -> datetime:
 
 def get_sorted_all_events_from_bitrix(events):
     """Возвращает все отсортированные события текущего дня."""
+    now = datetime.now(BITRIX_TZ)
+    midnight = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
-    time_now = datetime.now(BITRIX_TZ)
-    midnight = time_now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-
-    all_events_cur_day = []
+    parsed = []
     for event in events:
-        start_time = parse_bitrix_datetime(event["start"])
-        end_time = parse_bitrix_datetime(event["end"])
+        parsed.append((parse_bitrix_datetime(event["start"]),
+                       parse_bitrix_datetime(event["end"]),
+                       event))
+    parsed.sort(key=lambda x: (x[0], x[1]))
 
-        if start_time < midnight and end_time > time_now:
-            if time_now < start_time:
-                all_events_cur_day.append({
-                    "summary": "СВОБОДНО",
-                    "start": time_now.isoformat(),
-                    "end": start_time.isoformat(),
-                    "status": "free",
-                    "organizer": None
-                })
+    result = []
+    cursor = now  # до какого момента времени уже "покрыто"
+    for start_time, end_time, event in parsed:
+        if start_time >= midnight or end_time <= now:
+            continue  # не сегодня или уже закончилось
 
-            all_events_cur_day.append({
-                "summary": event.get("summary"),
-                "start": start_time.isoformat(),
-                "end": end_time.isoformat(),
-                "status": event.get("status", "reserved"),
-                "organizer": event.get("organizer")
+        if cursor < start_time:
+            result.append({
+                "summary": "СВОБОДНО",
+                "start": cursor.isoformat(),
+                "end": start_time.isoformat(),
+                "status": "free",
+                "organizer": None,
             })
 
-            time_now = max(time_now, end_time)
+        result.append({
+            "summary": event.get("summary"),
+            "start": start_time.isoformat(),
+            "end": end_time.isoformat(),
+            "status": event.get("status", "reserved"),
+            "organizer": event.get("organizer"),
+        })
+        cursor = max(cursor, end_time)
 
-    if time_now < midnight:
-        all_events_cur_day.append({
+    if cursor < midnight:
+        result.append({
             "summary": "СВОБОДНО",
-            "start": time_now.isoformat(),
+            "start": cursor.isoformat(),
             "end": midnight.isoformat(),
             "status": "free",
-            "organizer": None
+            "organizer": None,
         })
 
-    return all_events_cur_day
+    return result
 
 
 def get_all_events_today_in_json(events):
