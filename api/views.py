@@ -14,12 +14,11 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 
 from logs.logging_config import logger
+from rooms.services import bitrix_monitor
 from rooms.services.get_data_from_bitrix import (
     get_bitrix_client,
     get_raw_events,
     get_room_events_json,
-    report_bitrix_failure,
-    report_bitrix_recovery
 )
 
 from rooms.utils import (
@@ -52,15 +51,15 @@ def api_room_events(request, room_slug: str):
 
         cache.set(cache_key, {"data_json": data, "fetched_at": timezone.now().isoformat()}, timeout=None)
         try:
-            report_bitrix_recovery()
+            bitrix_monitor.record_success(room_slug)
         except Exception:
-            logger.exception("Не удалось обработать recovery-уведомление Bitrix")
+            logger.exception("Не удалось обработать успешный ответ Bitrix для мониторинга")
 
     except Exception:
         logger.exception("Bitrix request failed for room %s", room_slug)
 
         try:
-            report_bitrix_failure(room_slug)
+            bitrix_monitor.record_failure(room_slug)
         except Exception:
             logger.exception("Не удалось обработать алерт о падении Bitrix")
 

@@ -2,77 +2,14 @@ import datetime
 import logging
 from functools import lru_cache
 
-import requests
 from b24pysdk import Client, BitrixWebhook
 
 from django.conf import settings
-from django.core.cache import cache
-from django.utils import timezone
 
 from rooms.utils import parse_bitrix_datetime, BITRIX_DATE_FORMAT
+from rooms.services.telegram import send_telegram_message  # noqa: F401  (реэкспорт)
 
 logger = logging.getLogger(__name__)
-
-DOWN_SINCE_KEY = "bitrix:down_since"
-ALERT_COUNT_KEY = "bitrix:alert_count"
-LAST_ALERT_KEY = "bitrix:last_alert_at"
-
-
-def send_telegram_message(text: str) -> None:
-    url = f"https://api.telegram.org/bot{settings.TG_BOT_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": settings.TG_CHAT_ID,
-        "message_thread_id": settings.TG_TOPIC_ID,
-        "text": text,
-        "parse_mode": "HTML",
-        "disable_web_page_preview": True,
-    }
-
-    try:
-        response = requests.post(url, json=payload, timeout=5)
-        response.raise_for_status()
-        logger.info("Уведомление в Telegram успешно отправлено!")
-    except Exception:
-        logger.exception("Не удалось отправить уведомление в Telegram")
-
-
-def report_bitrix_failure(room_slug: str) -> None:
-    now = timezone.now()
-
-    # ставится только если ключа ещё нет — защита от гонки между 4 комнатами
-    cache.add(DOWN_SINCE_KEY, now.isoformat(), timeout=None)
-    down_since = datetime.datetime.fromisoformat(cache.get(DOWN_SINCE_KEY))
-    age_seconds = (now - down_since).total_seconds()
-
-    if age_seconds < settings.ALERT_THRESHOLD_SECONDS:
-        return  # ещё не 15 минут — молчим
-
-    alert_count = cache.get(ALERT_COUNT_KEY, 0)
-    if alert_count >= settings.MAX_ALERTS:
-        return  # уже отправили 3 раза — больше не спамим
-
-    last_alert_at = cache.get(LAST_ALERT_KEY)
-    if last_alert_at:
-        seconds_since_last = (now - datetime.datetime.fromisoformat(last_alert_at)).total_seconds()
-        if seconds_since_last < settings.ALERT_INTERVAL_SECONDS:
-            return  # прошлое уведомление было недавно
-
-    send_telegram_message(
-        f"Bitrix API недоступен уже {int(age_seconds // 60)} мин.\n"
-        f"Последняя ошибка зафиксирована на комнате: {room_slug}\n"
-        f"Уведомление {alert_count + 1}/{settings.MAX_ALERTS}"
-    )
-    cache.set(ALERT_COUNT_KEY, alert_count + 1, timeout=None)
-    cache.set(LAST_ALERT_KEY, now.isoformat(), timeout=None)
-
-
-def report_bitrix_recovery() -> None:
-    was_down = cache.get(DOWN_SINCE_KEY) is not None
-    cache.delete(DOWN_SINCE_KEY)
-    cache.delete(ALERT_COUNT_KEY)
-    cache.delete(LAST_ALERT_KEY)
-    if was_down:
-        send_telegram_message("Bitrix API снова отвечает.")
 
 
 @lru_cache(maxsize=1)

@@ -5,3 +5,5 @@ venv
 *.sqlite3
 /logs/app.log
 staticfiles
+__pycache__/
+
